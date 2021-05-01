@@ -1,4 +1,118 @@
 /*==================== 
+    Login - Register
+====================== */
+
+#login-body {
+    background: url(../img/bg-login.jpg) no-repeat center center fixed; 
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+}
+
+.login-heading-section {
+    font-size: 28px;
+    color: #fff; 
+}
+
+.login-wrap {
+    position: relative;
+    color: rgba(255, 255, 255, 0.9); 
+}
+
+.login-wrap h3 {
+    font-weight: 300;
+    color: #fff; 
+}
+
+.login-wrap .social {
+    width: 100%;
+}
+
+.login-wrap .social a {
+    width: 100%;
+    display: block;
+}
+
+.w-50 {
+    width: 50% !important; 
+}
+
+.text-md-right {
+    text-align: right !important; 
+}
+
+#forgot-password {
+    color: #fff;
+}
+
+#forgot-password:hover {
+    color: rgb(30, 30, 133)
+}
+
+.register-form-select {
+    background-color: rgba(255, 255, 255, 0.15);
+    border: 1px solid transparent;
+    color: white !important;
+    -webkit-transition: 0.3s;
+    -o-transition: 0.3s;
+    transition: 0.3s;
+    text-transform: capitalize;
+}
+
+.register-form-select:hover, .register-form-select:focus {
+    background-color: rgba(255, 255, 255, 0.0001);
+    outline: none;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    border-color: rgba(255, 255, 255, 0.4);
+    text-transform: capitalize;
+}
+
+.register-option-select {
+    background-color: #252525;
+    text-transform: capitalize;
+}
+
+.login-form-control {
+    background: transparent;
+    color: white !important;
+    border: 1px solid transparent;
+    background: rgba(255, 255, 255, 0.15);
+    -webkit-transition: 0.3s;
+    -o-transition: 0.3s;
+    transition: 0.3s;
+}
+
+.login-form-control:hover, .login-form-control:focus {
+    background: transparent;
+    outline: none;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    border-color: rgba(255, 255, 255, 0.4); 
+}
+
+.btn-facebook {
+    background-color: #4267B2;
+    color: #fff;
+}
+
+.btn-facebook:hover {
+    background-color: #131679;
+    color: #fff;
+}
+
+.btn-google {
+    background-color: #DB4437;
+    color: #fff;
+}
+
+.btn-google:hover {
+    background-color: #c20000;
+    color: #fff;
+}
+
+/*==================== 
     Custom CSS 
 ====================== */
 
@@ -103,4 +217,6 @@ html, body {
         height: 100%;
     }
 }
+
+
 
