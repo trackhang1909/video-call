@@ -1,0 +1,76 @@
+<%- include('layouts/header') -%>
+
+<div class="container-fluid" style="height: 100vh; position: fixed;">
+    <div class="row full-height">
+        <div class="col-12 col-md-4" style="background-color: aqua;">
+            <p>Thông tin tài khoản</p>
+            <p>Tên: ABC</p>
+        </div>
+        <div class="col-12 col-md-4">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th class="text-center" scope="col" colspan="3">Danh sách bạn bè</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="align-middle">
+                        <td>
+                            <div class="avatar-circle">
+                                <span class="avatar-initials">A</span>
+                            </div>
+                        </td>
+                        <td>Nguyễn Văn A</td>
+                        <td>
+                            <a class="btn btn-success btn-sm" href="/call" role="button">Gọi</a>
+                            <button onclick="addFriend(this)" type="button" class="btn btn-danger btn-sm">Hủy kết bạn</button>
+                        </td>
+                    </tr>
+                    <tr class="align-middle">
+                        <td>
+                            <div class="avatar-circle">
+                                <span class="avatar-initials">B</span>
+                            </div>
+                        </td>
+                        <td>Nguyễn Văn B</td>
+                        <td>
+                            <a class="btn btn-success btn-sm" href="/call" role="button">Gọi</a>
+                            <button onclick="addFriend(this)" type="button" class="btn btn-danger btn-sm">Hủy kết bạn</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="col-12 col-md-4" style="background-color: burlywood;">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th class="text-center" scope="col" colspan="3">Gợi ý kết bạn</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="align-middle">
+                        <td>
+                            <div class="avatar-circle">
+                                <span class="avatar-initials">A</span>
+                            </div>
+                        </td>
+                        <td>Nguyễn Văn A</td>
+                        <td><button onclick="addFriend(this)" type="button" class="btn btn-secondary btn-sm">Kết bạn</button></td>
+                    </tr>
+                    <tr class="align-middle">
+                        <td>
+                            <div class="avatar-circle">
+                                <span class="avatar-initials">B</span>
+                            </div>
+                        </td>
+                        <td>Nguyễn Văn B</td>
+                        <td><button onclick="addFriend(this)" type="button" class="btn btn-secondary btn-sm">Kết bạn</button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<%- include('layouts/footer') -%>
