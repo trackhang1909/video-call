@@ -9,9 +9,4 @@ router.get('/call', HomeController.call);
 // [GET] /account-detail
 router.get('/account-detail', HomeController.accountDetail);
 
-
-//Temp
-router.get('/login', HomeController.login);
-router.get('/register', HomeController.register);
-
 module.exports = router;

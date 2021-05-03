@@ -1,8 +1,8 @@
 const homeRouter = require('./home');
-const loginRouter = require('./login');
+const authRouter = require('./auth');
 
 function route(app) {
-    // app.use('/login', loginRouter);
+    app.use('/auth', authRouter);
     app.use('/', homeRouter);
 }
 
