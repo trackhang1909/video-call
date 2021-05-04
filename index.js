@@ -30,6 +30,8 @@ app.use(logger('dev'))
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'resources/views'));
 
+require('./config/facebook')
+
 //Routes init
 route(app);
 

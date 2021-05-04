@@ -21,6 +21,9 @@ const User = new Schema({
     },
     photo_url: {
         type: String,
+    },
+    auth_id: {
+        type: String,
     }
 }, {
     timestamps: true,

@@ -185,6 +185,20 @@ class AuthController {
             return res.redirect('/auth/login')
         }
     }
+
+    facebookAuth(req, res, next) {
+        // create token
+        let token = jwt.sign({ id: req.user._id }, 'secret', { expiresIn: '1h' })
+
+        // store token in httpOnly
+        res.cookie('token', token, {
+            // maxAge: 300000,
+            httpOnly: true,
+        })
+
+        // redirect to index page
+        return res.redirect('/')
+    }
 }
 
 module.exports = new AuthController();
