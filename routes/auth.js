@@ -38,4 +38,29 @@ router.get(
     AuthController.facebookAuth
 )
 
+// Get Google auth
+router.get(
+    '/google',
+    passport.authenticate(
+        'google',
+        { scope: ['profile', 'email'] }
+    )
+)
+
+// Get Google callback
+router.get(
+    // url
+    '/google/callback',
+    // middleware
+    passport.authenticate(
+        'google',
+        { failureRedirect: '/auth/login' }
+    ),
+    // controller
+    AuthController.googleAuth
+)
+
+// Log out
+router.get('/logout', AuthController.logout)
+
 module.exports = router

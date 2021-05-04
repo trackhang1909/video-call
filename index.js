@@ -3,9 +3,10 @@ const express = require('express');
 const path = require('path');
 const route = require('./routes');
 const session = require('express-session')
+const cookieParser = require('cookie-parser');
 const passport = require('passport')
 const flash = require("express-flash");
-var logger = require('morgan');
+const logger = require('morgan');
 const connectDatabase = require('./config/database');
 
 
@@ -18,6 +19,7 @@ connectDatabase();
 app.use(express.static(path.join(__dirname, 'public')));
 
 //Body parse
+app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(session({ resave: false, saveUninitialized: true, secret: 'SECRET' }))
@@ -31,6 +33,7 @@ app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'resources/views'));
 
 require('./config/facebook')
+require('./config/google')
 
 //Routes init
 route(app);

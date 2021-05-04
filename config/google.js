@@ -1,15 +1,16 @@
 const passport = require('passport')
-const FacebookStrategy = require('passport-facebook').Strategy
+const GoogleStrategy = require('passport-google-oauth20').Strategy
 const User = require('../app/models/User')
 
-passport.use(new FacebookStrategy({
-    clientID: '2823399284595611',
-    clientSecret: 'ea7e2b7342b58a20413a51699bdec020',
-    callbackURL: 'http://localhost:8000/auth/facebook/callback',
-    profileFields: ['id', 'displayName', 'email', 'gender', 'picture']
-},
+passport.use(new GoogleStrategy(
+    {
+        clientID: '160369300926-kfh182l39g0o885nemdlh625c53n01im.apps.googleusercontent.com',
+        clientSecret: 'j29fRuw3ygMVIMdRq1djQJX4',
+        callbackURL: 'http://localhost:8000/auth/google/callback',
+        scope: ['profile', 'email']
+    },
     (access_token, refresh_token, profile, done) => {
-        let auth_id = 'facebook:' + profile.id
+        let auth_id = 'google:' + profile.id
         let email = profile.emails[0].value
 
         var user_data = {
@@ -31,14 +32,3 @@ passport.use(new FacebookStrategy({
             })
     }
 ))
-
-passport.serializeUser((user, done) => {
-    done(null, user._id);
-
-})
-
-passport.deserializeUser((id, done) => {
-    User.findById(id)
-        .then(user => done(null, user))
-        .catch(error => done(error, null))
-})

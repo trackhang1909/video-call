@@ -186,6 +186,7 @@ class AuthController {
         }
     }
 
+    // Facebook Authorize
     facebookAuth(req, res, next) {
         // create token
         let token = jwt.sign({ id: req.user._id }, 'secret', { expiresIn: '1h' })
@@ -198,6 +199,26 @@ class AuthController {
 
         // redirect to index page
         return res.redirect('/')
+    }
+
+    // Google Authorize
+    googleAuth(req, res, next) {
+        // create token
+        let token = jwt.sign({ id: req.user._id }, 'secret', { expiresIn: '1h' })
+
+        // store token in httpOnly
+        res.cookie('token', token, {
+            httpOnly: true,
+        })
+
+        // redirect to index page
+        return res.redirect('/')
+    }
+
+    // Log out
+    logout(req, res, next) {
+        res.cookie('token', '', { expires: new Date(0) })
+        return res.redirect('/auth/login')
     }
 }
 
