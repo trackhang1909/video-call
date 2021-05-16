@@ -218,7 +218,8 @@ class AuthController {
     // Log out
     logout(req, res, next) {
         res.cookie('token', '', { expires: new Date(0) })
-        return res.redirect('/auth/login')
+        req.flash('isLogged', false)
+        return res.redirect('/')
     }
 }
 

@@ -9,22 +9,32 @@
                     <a class="nav-link active" aria-current="page" href="/">Trang chủ</a>
                 </li>
             </ul>
-            <div class="float-left">
+            <% if (isLogged == true) { %>
                 <div class="float-left">
-                    <div class="avatar-circle">
-                        <span class="avatar-initials">K</span>
+                    <div class="float-left">
+                        <div class="avatar-circle">
+                            <span class="avatar-initials">K</span>
+                        </div>
+                    </div>
+                    <div class="btn-group h-40">
+                        <button type="button" class="btn btn-user-setting dropdown-toggle" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false">
+                            <%= user.fullname %> 
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-lg-end">
+                            <li><a class="dropdown-item" href="/account-detail">Thông tin tài khoản</a></li>
+                            <li><a class="dropdown-item" href="/auth/logout">Đăng xuất</a></li>
+                        </ul>
                     </div>
                 </div>
-                <div class="btn-group h-40">
-                    <button type="button" class="btn btn-user-setting dropdown-toggle" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false">
-                        Khang
-                    </button>
-                    <ul class="dropdown-menu dropdown-menu-lg-end">
-                        <li><a class="dropdown-item" href="/account-detail">Thông tin tài khoản</a></li>
-                        <li><a class="dropdown-item" href="/auth/logout">Đăng xuất</a></li>
-                    </ul>
+            <% } else { %>
+                <div class="float-left">
+                    <div class="btn-group h-40">
+                        <a href="/auth/login" class="btn btn-user-setting" >Đăng nhập</a>
+                    </div>
                 </div>
-            </div>
+            <% } %> 
+             
+            
         </div>
     </div>
 </nav>
