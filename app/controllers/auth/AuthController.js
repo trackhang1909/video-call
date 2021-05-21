@@ -96,7 +96,7 @@ class AuthController {
         let error = req.flash('error') || ''
         let username = req.flash('username') || ''
 
-        res.render('auth/login', { error, username });
+        return res.render('auth/login', { error, username });
 
     }
 
@@ -108,6 +108,8 @@ class AuthController {
         // get username / password from form
         let username = req.body.username
         let password = req.body.password
+
+        let remember = req.body.rememberPassword
 
         console.log(result);
         // if validation success
@@ -136,11 +138,19 @@ class AuthController {
                                 // generate user token
                                 let token = jwt.sign({ id: user._id, username: user.username }, 'secret', { expiresIn: '1h' })
 
-                                // store token in httpOnly
-                                res.cookie('token', token, {
-                                    maxAge: 300000,
-                                    httpOnly: true,
-                                })
+                                if (remember == 'on') {
+                                    // store token in httpOnly
+                                    res.cookie('token', token, {
+                                        expires: new Date(new Date(2147483647 * 1000).toUTCString()),
+                                        httpOnly: true,
+                                    })
+                                } else {
+                                    // store token in httpOnly
+                                    res.cookie('token', token, {
+                                        maxAge: 300000,
+                                        httpOnly: true,
+                                    })
+                                }
 
                                 // redirect to index page
                                 return res.redirect('/')
@@ -148,9 +158,11 @@ class AuthController {
                             // if user password not match
                             else {
                                 // flash data
-                                let msg = 'Tên người dùng hoặc mật khẩu không đúng'
+                                let msg = 'Tên người dùng / mật khẩu không đúng'
                                 req.flash("error", msg)
                                 req.flash('username', username)
+
+                                console.log(username);
 
                                 return res.redirect('/auth/login')
                             }
@@ -181,6 +193,7 @@ class AuthController {
 
             // flash data
             req.flash("error", msg)
+            req.flash('username', username)
 
             return res.redirect('/auth/login')
         }

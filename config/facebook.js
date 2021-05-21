@@ -20,7 +20,7 @@ passport.use(new FacebookStrategy({
         }
 
         console.log(profile);
-        User.findOneAndUpdate({ $or: [{ email: email }, { auth_id: auth_id }] }, user_data).
+        User.findOne({ $or: [{ email: email }, { auth_id: auth_id }] }).
             then(user => {
                 if (user) {
                     return done(null, user)
