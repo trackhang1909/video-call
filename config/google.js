@@ -14,6 +14,7 @@ passport.use(new GoogleStrategy(
         let email = profile.emails[0].value
 
         var user_data = {
+            username: email,
             email: email,
             fullname: profile.displayName,
             auth_id: auth_id,

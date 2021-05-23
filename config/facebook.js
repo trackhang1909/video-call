@@ -13,6 +13,7 @@ passport.use(new FacebookStrategy({
         let email = profile.emails[0].value
 
         var user_data = {
+            username: email,
             email: email,
             fullname: profile.displayName,
             auth_id: auth_id,
@@ -20,7 +21,7 @@ passport.use(new FacebookStrategy({
         }
 
         console.log(profile);
-        User.findOne({ $or: [{ email: email }, { auth_id: auth_id }] }).
+        User.findOneAndUpdate({ $or: [{ email: email }, { auth_id: auth_id }] }).
             then(user => {
                 if (user) {
                     return done(null, user)
