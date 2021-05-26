@@ -96,7 +96,7 @@ class AuthController {
         let error = req.flash('error') || ''
         let username = req.flash('username') || ''
 
-        res.render('auth/login', { error, username });
+        return res.render('auth/login', { error, username });
 
     }
 
@@ -108,6 +108,8 @@ class AuthController {
         // get username / password from form
         let username = req.body.username
         let password = req.body.password
+
+        let remember = req.body.rememberPassword
 
         console.log(result);
         // if validation success
@@ -133,14 +135,24 @@ class AuthController {
                             // -> generate user token
                             // -> redirect index page
                             if (result) {
-                                // generate user token
-                                let token = jwt.sign({ id: user._id, username: user.username }, 'secret', { expiresIn: '1h' })
-
-                                // store token in httpOnly
-                                res.cookie('token', token, {
-                                    maxAge: 300000,
-                                    httpOnly: true,
-                                })
+                                if (remember == 'on') {
+                                    // generate user token
+                                    let token = jwt.sign({ id: user._id, username: user.username }, 'secret', { expiresIn: '10y' })
+                                    console.log(token);
+                                    // store token in httpOnly
+                                    res.cookie('token', token, {
+                                        expires: new Date(new Date(2147483647 * 1000).toUTCString()),
+                                        httpOnly: true,
+                                    })
+                                } else {
+                                    // generate user token
+                                    let token = jwt.sign({ id: user._id, username: user.username }, 'secret', { expiresIn: '1d' })
+                                    // store token in httpOnly
+                                    res.cookie('token', token, {
+                                        maxAge: 300000 * 12 * 24,
+                                        httpOnly: true,
+                                    })
+                                }
 
                                 // redirect to index page
                                 return res.redirect('/')
@@ -148,9 +160,11 @@ class AuthController {
                             // if user password not match
                             else {
                                 // flash data
-                                let msg = 'Tên người dùng hoặc mật khẩu không đúng'
+                                let msg = 'Tên người dùng / mật khẩu không đúng'
                                 req.flash("error", msg)
                                 req.flash('username', username)
+
+                                console.log(username);
 
                                 return res.redirect('/auth/login')
                             }
@@ -181,6 +195,7 @@ class AuthController {
 
             // flash data
             req.flash("error", msg)
+            req.flash('username', username)
 
             return res.redirect('/auth/login')
         }
@@ -189,11 +204,11 @@ class AuthController {
     // Facebook Authorize
     facebookAuth(req, res, next) {
         // create token
-        let token = jwt.sign({ id: req.user._id }, 'secret', { expiresIn: '1h' })
+        let token = jwt.sign({ id: req.user._id }, 'secret', { expiresIn: '1d' })
 
         // store token in httpOnly
         res.cookie('token', token, {
-            // maxAge: 300000,
+            maxAge: 300000 * 12 * 24,
             httpOnly: true,
         })
 
@@ -204,10 +219,11 @@ class AuthController {
     // Google Authorize
     googleAuth(req, res, next) {
         // create token
-        let token = jwt.sign({ id: req.user._id }, 'secret', { expiresIn: '1h' })
+        let token = jwt.sign({ id: req.user._id }, 'secret', { expiresIn: '1d' })
 
         // store token in httpOnly
         res.cookie('token', token, {
+            maxAge: 300000 * 12 * 24,
             httpOnly: true,
         })
 
@@ -218,7 +234,8 @@ class AuthController {
     // Log out
     logout(req, res, next) {
         res.cookie('token', '', { expires: new Date(0) })
-        return res.redirect('/auth/login')
+        req.flash('isLogged', false)
+        return res.redirect('/')
     }
 }
 

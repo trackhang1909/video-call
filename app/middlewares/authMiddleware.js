@@ -60,6 +60,21 @@ class authMiddleware {
             .notEmpty()
             .withMessage("Mật khẩu không được để trống"),
     ]
+
+    isLogged(req, res, next) {
+        const token = req.cookies.token
+
+        if (req.isAuthenticated()) {
+            return next()
+        }
+
+        if (token) {
+            return next()
+        }
+
+        req.flash('isLogged', false)
+        return res.redirect('/')
+    }
 }
 
 module.exports = new authMiddleware();

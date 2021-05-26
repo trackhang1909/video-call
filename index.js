@@ -8,6 +8,7 @@ const passport = require('passport')
 const flash = require("express-flash");
 const logger = require('morgan');
 const connectDatabase = require('./config/database');
+const http = require('http');
 
 const app = express();
 
@@ -37,6 +38,23 @@ require('./config/google')
 //Routes init
 route(app);
 
+// Config socket
+const server = http.createServer(app);
+const io = require('socket.io')(server);
+
+io.on('connection', (socket) => {
+    console.log('connected');
+    socket.on("disconnect", function () {
+        console.log('disconnected');
+    });
+    //  server receive data
+    socket.on("Client-sent-data", function (data) {
+        socket.broadcast.emit("Server-sent-data", data);
+    });
+});
+
 //Listen port
 const port = process.env.PORT;
-app.listen(port, () => console.log(`Listening at http://localhost:${port}`));
+server.listen(port, () => console.log(`Listening at http://localhost:${port}`));
+
+
