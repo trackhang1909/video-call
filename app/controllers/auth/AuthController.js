@@ -135,19 +135,21 @@ class AuthController {
                             // -> generate user token
                             // -> redirect index page
                             if (result) {
-                                // generate user token
-                                let token = jwt.sign({ id: user._id, username: user.username }, 'secret', { expiresIn: '1h' })
-
                                 if (remember == 'on') {
+                                    // generate user token
+                                    let token = jwt.sign({ id: user._id, username: user.username }, 'secret', { expiresIn: '10y' })
+                                    console.log(token);
                                     // store token in httpOnly
                                     res.cookie('token', token, {
                                         expires: new Date(new Date(2147483647 * 1000).toUTCString()),
                                         httpOnly: true,
                                     })
                                 } else {
+                                    // generate user token
+                                    let token = jwt.sign({ id: user._id, username: user.username }, 'secret', { expiresIn: '1d' })
                                     // store token in httpOnly
                                     res.cookie('token', token, {
-                                        maxAge: 300000,
+                                        maxAge: 300000 * 12 * 24,
                                         httpOnly: true,
                                     })
                                 }
@@ -202,11 +204,11 @@ class AuthController {
     // Facebook Authorize
     facebookAuth(req, res, next) {
         // create token
-        let token = jwt.sign({ id: req.user._id }, 'secret', { expiresIn: '1h' })
+        let token = jwt.sign({ id: req.user._id }, 'secret', { expiresIn: '1d' })
 
         // store token in httpOnly
         res.cookie('token', token, {
-            // maxAge: 300000,
+            maxAge: 300000 * 12 * 24,
             httpOnly: true,
         })
 
@@ -217,10 +219,11 @@ class AuthController {
     // Google Authorize
     googleAuth(req, res, next) {
         // create token
-        let token = jwt.sign({ id: req.user._id }, 'secret', { expiresIn: '1h' })
+        let token = jwt.sign({ id: req.user._id }, 'secret', { expiresIn: '1d' })
 
         // store token in httpOnly
         res.cookie('token', token, {
+            maxAge: 300000 * 12 * 24,
             httpOnly: true,
         })
 

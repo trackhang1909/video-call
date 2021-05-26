@@ -33,7 +33,7 @@
                             </td>
                             <td><%= element.fullname %> </td>
                             <td>
-                                <a class="btn btn-success btn-sm" href="/call" role="button">Gọi</a>
+                                <a class="btn btn-success btn-sm" href="" role="button">Gọi</a>
                                 <button onclick="addFriend(this)" type="button" class="btn btn-danger btn-sm">Hủy kết bạn</button>
                             </td>
                         </tr>
@@ -50,6 +50,31 @@
                 </thead>
                 <tbody>
                     <% list_suggest.forEach(element => { %>
+                        <tr class="align-middle">
+                            <td>
+                                <div class="avatar-circle">
+                                    <span class="avatar-initials">A</span>
+                                </div>
+                            </td>
+                            <td><%= element.request_to.fullname %> </td>
+                            <% if (element.status != 1) { %>
+                                <td><button id="<%=element.request_to.id%>" type="button" class="btn btn-secondary btn-sm requestBtn">Kết bạn</button></td>
+                            <% } else { %>
+                                <td><button id="<%=element.request_to.id%>" type="button" class="btn btn-danger btn-sm requestBtn">Hủy lời mời</button></td>
+                            <% } %>
+                        </tr>
+                    <% }) %>      
+                </tbody>
+            </table>
+
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th class="text-center" scope="col" colspan="3">Lời mời kết bạn</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% list_suggest.forEach(element => { %>
                         <% if (element.id != user.id) { %>
                             <tr class="align-middle">
                                 <td>
@@ -58,7 +83,10 @@
                                     </div>
                                 </td>
                                 <td><%= element.fullname %> </td>
-                                <td><button onclick="addFriend(this)" type="button" class="btn btn-secondary btn-sm">Kết bạn</button></td>
+                                <td>
+                                    <a class="btn btn-success btn-sm" href="" role="button">Đồng ý</a>
+                                    <button onclick="addFriend(this)" type="button" class="btn btn-danger btn-sm">Từ chối</button>
+                                </td>
                             </tr>
                         <% } %>
                     <% }) %>      
