@@ -24,7 +24,10 @@ const User = new Schema({
     },
     auth_id: {
         type: String,
-    }
+    },
+    list_friends: [
+        { type: Schema.Types.ObjectId, ref: 'User' }
+    ]
 }, {
     timestamps: true,
 });
