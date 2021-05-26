@@ -1,47 +1,53 @@
 $(document).ready(function () {
+    $('body').on('click', '.requestBtn', function (e) {
 
-    $('.requestBtn').on('click', function (e) {
         let fromId = $('.fromUser').attr('id');
         let toId = $(this).attr('id');
-        e.preventDefault()
 
-        if ($(this).attr('class').includes('btn btn-secondary btn-sm')) {
-            $(this).attr('class', 'btn btn-danger btn-sm')
-            $(this).text('Hủy lời mời')
-            $.ajax({
-                type: "post",
-                url: "/user/request/" + toId,
-                data: { fromId },
-                success: function (response) {
-                    console.log('send');
-                }
-            });
-        } else {
-            $(this).attr('class', 'btn btn-secondary btn-sm')
-            $(this).text('Kết bạn')
+        console.log(toId);
 
-            $.ajax({
-                type: "post",
-                url: "/user/cancel-request/" + toId,
-                data: { fromId },
-                success: function (response) {
-                    console.log('cancel');
+        $(this).attr('class', 'btn btn-danger btn-sm')
+        $(this).text('Hủy lời mời')
+        $.ajax({
+            type: "post",
+            url: "/user/request/" + toId,
+            data: { fromId },
+            success: function (response) {
+                let data = response.data
+                console.log(data);
+                if (response.success) {
+                    socket.emit("Client-sent-data", data);
+                    $('#right-panel').load('/account-detail .right-panel-content')
                 }
-            });
-        }
+            }
+        });
+
     })
 
-    var readURL = function (input) {
-        if (input.files && input.files[0]) {
-            var reader = new FileReader();
+    $('body').on('click', '.cancel-requestBtn', function (e) {
+        let fromId = $('.fromUser').attr('id');
+        let toId = $(this).attr('id');
 
-            reader.onload = function (e) {
-                $('.profile-pic').attr('src', e.target.result);
+        console.log(toId);
+
+
+        $(this).attr('class', 'btn btn-secondary btn-sm')
+        $(this).text('Kết bạn')
+
+        $.ajax({
+            type: "post",
+            url: "/user/cancel-request/" + toId,
+            data: { fromId },
+            success: function (response) {
+                let data = response.data
+                console.log(data);
+                if (response.success) {
+                    socket.emit("Client-sent-data", data);
+                    $('#right-panel').load('/account-detail .right-panel-content')
+                }
             }
-
-            reader.readAsDataURL(input.files[0]);
-        }
-    }
+        })
+    })
 
     $(".file-upload").on('change', function () {
         readURL(this);

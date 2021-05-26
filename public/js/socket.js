@@ -6,6 +6,9 @@ $(document).ready(function () {
     })
 
     socket.on("Server-sent-data", function (data) {
-        console.log('receive ' + data);
+        let fromId = $('.fromUser').attr('id');
+        if (data.id_user == fromId) {
+            $('#right-panel').load('/account-detail .right-panel-content')
+        }
     });
 })

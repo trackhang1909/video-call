@@ -1,4 +1,5 @@
 const { verify } = require("jsonwebtoken");
+const Notification = require("../models/Notification");
 const Suggest = require("../models/Suggest");
 const User = require("../models/User");
 
@@ -66,13 +67,22 @@ class HomeController {
                 let request = await Suggest.findOne({ $and: [{ id_user: user }, { request_to: requestToUser }] });
 
                 if (request) {
-                    if (request.status != 1) {
-                        await Suggest.findOneAndUpdate({ $and: [{ id_user: user }, { request_to: requestToUser }] }, { status: 0 });
+                    if (request.status != 1 && request.status != 2) {
+                        await Suggest.findOneAndUpdate({ $and: [{ id_user: user }, { request_to: requestToUser }] }, { status: 0 })
                     }
-                    console.log('skip');
                 } else {
                     await Suggest.create(data);
-                    console.log('create');
+                }
+            }
+
+            let list_notification = await Notification.findOne({ id_user: user }).populate('request_from')
+
+            // get list friends request 
+            if (list_notification) {
+                for await (let element of list_notification.request_from) {
+                    let toUser = await User.findById(element.id)
+
+                    await Suggest.findOneAndUpdate({ $and: [{ id_user: user }, { request_to: toUser }] }, { status: 2 })
                 }
             }
 
@@ -81,7 +91,7 @@ class HomeController {
 
             title = user.fullname
 
-            return res.render('account-detail', { title, isLogged, user, list_suggest, });
+            return res.render('account-detail', { title, isLogged, user, list_suggest, list_notification });
         }
         return res.render('account-detail', { isLogged });
     }
