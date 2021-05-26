@@ -9,7 +9,6 @@ const flash = require("express-flash");
 const logger = require('morgan');
 const connectDatabase = require('./config/database');
 
-
 const app = express();
 
 //Connect database
