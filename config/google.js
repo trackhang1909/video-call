@@ -14,6 +14,7 @@ passport.use(new GoogleStrategy(
         let email = profile.emails[0].value
 
         var user_data = {
+            username: email,
             email: email,
             fullname: profile.displayName,
             auth_id: auth_id,
@@ -21,7 +22,7 @@ passport.use(new GoogleStrategy(
         }
 
         console.log(profile);
-        User.findOneAndUpdate({ $or: [{ email: email }, { auth_id: auth_id }] }, user_data).
+        User.findOne({ $or: [{ email: email }, { auth_id: auth_id }] }).
             then(user => {
                 if (user) {
                     return done(null, user)

@@ -1,10 +1,20 @@
 <%- include('layouts/header') -%>
+<link rel="stylesheet" href="../css/avatarStyle.css">
+<script src="../js/profileUser.js"></script>
 
 <div class="container-fluid" style="height: 100vh; position: fixed;">
     <div class="row full-height">
         <div class="col-12 col-md-4" style="background-color: aqua;">
             <p>Thông tin tài khoản</p>
-            <p>Tên: ABC</p>
+            <div class="avatar-wrapper">
+                <img class="profile-pic" src="" />
+                <div class="upload-button">
+                    <i class="fa fa-arrow-circle-up" aria-hidden="true"></i>
+                </div>
+                <input class="file-upload" type="file" accept="image/*"/>
+            </div>
+            <p>Tên: <%=user.fullname %> </p>
+            <p>Email: <%=user.email %> </p>
         </div>
         <div class="col-12 col-md-4">
             <table class="table">
@@ -14,30 +24,20 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr class="align-middle">
-                        <td>
-                            <div class="avatar-circle">
-                                <span class="avatar-initials">A</span>
-                            </div>
-                        </td>
-                        <td>Nguyễn Văn A</td>
-                        <td>
-                            <a class="btn btn-success btn-sm" href="/call" role="button">Gọi</a>
-                            <button onclick="addFriend(this)" type="button" class="btn btn-danger btn-sm">Hủy kết bạn</button>
-                        </td>
-                    </tr>
-                    <tr class="align-middle">
-                        <td>
-                            <div class="avatar-circle">
-                                <span class="avatar-initials">B</span>
-                            </div>
-                        </td>
-                        <td>Nguyễn Văn B</td>
-                        <td>
-                            <a class="btn btn-success btn-sm" href="/call" role="button">Gọi</a>
-                            <button onclick="addFriend(this)" type="button" class="btn btn-danger btn-sm">Hủy kết bạn</button>
-                        </td>
-                    </tr>
+                    <% user.list_friends.forEach(element => { %>
+                        <tr class="align-middle">
+                            <td>
+                                <div class="avatar-circle">
+                                    <span class="avatar-initials">A</span>
+                                </div>
+                            </td>
+                            <td><%= element.fullname %> </td>
+                            <td>
+                                <a class="btn btn-success btn-sm" href="" role="button">Gọi</a>
+                                <button onclick="addFriend(this)" type="button" class="btn btn-danger btn-sm">Hủy kết bạn</button>
+                            </td>
+                        </tr>
+                    <% }) %>
                 </tbody>
             </table>
         </div>
@@ -49,24 +49,47 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr class="align-middle">
-                        <td>
-                            <div class="avatar-circle">
-                                <span class="avatar-initials">A</span>
-                            </div>
-                        </td>
-                        <td>Nguyễn Văn A</td>
-                        <td><button onclick="addFriend(this)" type="button" class="btn btn-secondary btn-sm">Kết bạn</button></td>
+                    <% list_suggest.forEach(element => { %>
+                        <tr class="align-middle">
+                            <td>
+                                <div class="avatar-circle">
+                                    <span class="avatar-initials">A</span>
+                                </div>
+                            </td>
+                            <td><%= element.request_to.fullname %> </td>
+                            <% if (element.status != 1) { %>
+                                <td><button id="<%=element.request_to.id%>" type="button" class="btn btn-secondary btn-sm requestBtn">Kết bạn</button></td>
+                            <% } else { %>
+                                <td><button id="<%=element.request_to.id%>" type="button" class="btn btn-danger btn-sm requestBtn">Hủy lời mời</button></td>
+                            <% } %>
+                        </tr>
+                    <% }) %>      
+                </tbody>
+            </table>
+
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th class="text-center" scope="col" colspan="3">Lời mời kết bạn</th>
                     </tr>
-                    <tr class="align-middle">
-                        <td>
-                            <div class="avatar-circle">
-                                <span class="avatar-initials">B</span>
-                            </div>
-                        </td>
-                        <td>Nguyễn Văn B</td>
-                        <td><button onclick="addFriend(this)" type="button" class="btn btn-secondary btn-sm">Kết bạn</button></td>
-                    </tr>
+                </thead>
+                <tbody>
+                    <% list_suggest.forEach(element => { %>
+                        <% if (element.id != user.id) { %>
+                            <tr class="align-middle">
+                                <td>
+                                    <div class="avatar-circle">
+                                        <span class="avatar-initials">A</span>
+                                    </div>
+                                </td>
+                                <td><%= element.fullname %> </td>
+                                <td>
+                                    <a class="btn btn-success btn-sm" href="" role="button">Đồng ý</a>
+                                    <button onclick="addFriend(this)" type="button" class="btn btn-danger btn-sm">Từ chối</button>
+                                </td>
+                            </tr>
+                        <% } %>
+                    <% }) %>      
                 </tbody>
             </table>
         </div>
