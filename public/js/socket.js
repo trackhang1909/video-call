@@ -9,6 +9,7 @@ $(document).ready(function () {
         let fromId = $('.fromUser').attr('id');
         if (data.id_user == fromId) {
             $('#right-panel').load('/account-detail .right-panel-content')
+            $('.navbar').load('/ #nav-content')
         }
     });
 })

@@ -21,7 +21,9 @@ class HomeController {
 
             let user = await User.findById(userId)
 
-            return res.render('index', { title, isLogged, user });
+            let list_notification = await Notification.findOne({ id_user: user }).populate('request_from.user')
+
+            return res.render('index', { title, isLogged, user, list_notification });
         }
         return res.render('index', { title, isLogged });
     }
@@ -75,12 +77,12 @@ class HomeController {
                 }
             }
 
-            let list_notification = await Notification.findOne({ id_user: user }).populate('request_from')
+            let list_notification = await Notification.findOne({ id_user: user }).populate('request_from.user')
 
             // get list friends request 
             if (list_notification) {
                 for await (let element of list_notification.request_from) {
-                    let toUser = await User.findById(element.id)
+                    let toUser = await User.findById(element.user.id)
 
                     await Suggest.findOneAndUpdate({ $and: [{ id_user: user }, { request_to: toUser }] }, { status: 2 })
                 }

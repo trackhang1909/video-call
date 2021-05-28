@@ -1,4 +1,4 @@
-function addFriend (event) {
+function addFriend(event) {
     if (event.className === 'btn btn-secondary btn-sm') {
         event.parentNode.innerHTML = '<button onclick="addFriend(this)" type="button" class="btn btn-danger btn-sm">Hủy kết bạn</button>'
     }
@@ -28,7 +28,7 @@ if (window.location.pathname === '/call') {
         const config = { audio: false, video: true };
         return navigator.mediaDevices.getUserMedia(config);
     }
-    
+
     function playStream(idVideoTag, stream) {
         const video = document.getElementById(idVideoTag);
         video.srcObject = stream;
@@ -62,7 +62,7 @@ if (window.location.pathname === '/call') {
             }
         }, 1000);
     });
-    
+
     //Answer
     peer.on('call', call => {
         call.answer(streamCall);
@@ -72,3 +72,33 @@ if (window.location.pathname === '/call') {
     });
 
 }
+
+$(document).ready(function () {
+    $('body').on('click', '#notificationLink', function (e) {
+        $("#notificationContainer").fadeToggle(300);
+        $("#notification_count").fadeOut("slow");
+        $('#notificationLink').attr('class', 'far fa-bell fa-lg');
+
+        let userId = $('.fromUser').attr('id');
+
+        $.ajax({
+            type: "post",
+            url: "/notify/seen/" + userId,
+        });
+
+        return false;
+    });
+
+    //Document Click hiding the popup 
+    $(document).on('click', function () {
+        // $("#notificationContainer").hide();
+        $("#notificationContainer").fadeOut(300);
+    });
+
+    // Popup on click
+    // $("#notificationContainer").click(function () {
+    //     // $("#notificationContainer").hide();
+    //     // $('#notificationLink').attr('class', 'far fa-bell fa-lg');
+    //     return false;
+    // })
+})

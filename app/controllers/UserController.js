@@ -14,10 +14,7 @@ class HomeController {
         let fromUser = await User.findById(fromId)
 
         // Get list notification
-        let list_notification = await Notification.findOne({ id_user: toUser }).populate('request_from')
-
-        console.log(toId);
-        console.log(list_notification);
+        let list_notification = await Notification.findOne({ id_user: toUser }).populate('request_from.user')
 
         // Update status suggest
         await Suggest.findOneAndUpdate({ $and: [{ id_user: fromUser }, { request_to: toUser }] }, { status: 1 })
@@ -25,7 +22,7 @@ class HomeController {
         if (list_notification) {
             let contain = false
             for await (let element of list_notification.request_from) {
-                if (element.id != fromUser.id) {
+                if (element.user.id != fromUser.id) {
                     contain = false
                 } else {
                     contain = true
@@ -34,20 +31,23 @@ class HomeController {
             }
             // Update request notification
             if (!contain) {
-                await Notification.findOneAndUpdate({ id_user: toUser }, { $push: { request_from: fromUser } })
+                await Notification.findOneAndUpdate(
+                    { id_user: toUser },
+                    { $push: { request_from: { user: fromUser, status: 'new' } } }
+                )
             }
         } else {
             // if notification not exist 
             let dataNotification = {
                 id_user: toId,
-                request_from: [fromUser]
+                request_from: [{ user: fromUser, status: 'new' }],
             }
 
             // => create notification
             await Notification.create(dataNotification);
         }
 
-        let toUserData = await Notification.findOne({ id_user: toUser })
+        let toUserData = await Notification.findOne({ id_user: toUser }).populate('request_from')
 
         return res.json({
             success: true,
@@ -66,16 +66,16 @@ class HomeController {
         let fromUser = await User.findById(fromId)
 
         // Get list notification
-        let list_notification = await Notification.findOne({ id_user: toUser }).populate('request_from')
+        let list_notification = await Notification.findOne({ id_user: toUser }).populate('request_from.user')
 
         // Renew list suggest
         await Suggest.findOneAndUpdate({ $and: [{ id_user: fromUser }, { request_to: toUser }] }, { status: 0 })
 
         if (list_notification) {
             for await (let element of list_notification.request_from) {
-                if (element.id == fromUser.id) {
+                if (element.user.id == fromUser.id) {
                     // Remove request
-                    await Notification.findOneAndUpdate({ id_user: toUser }, { $pull: { request_from: fromUser.id } })
+                    await Notification.findOneAndUpdate({ id_user: toUser }, { $pull: { request_from: { user: fromUser } } })
 
                     // Renew list suggest
                     await Suggest.findOneAndUpdate({ $and: [{ id_user: toUser }, { request_to: fromUser }] }, { status: 0 })

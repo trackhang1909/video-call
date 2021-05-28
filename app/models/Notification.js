@@ -5,11 +5,14 @@ const Notification = new Schema({
     id_user: {
         type: Schema.Types.ObjectId, ref: 'User',
     },
-    request_from: [
-        {
+    request_from: [{
+        user: {
             type: Schema.Types.ObjectId, ref: 'User',
+        },
+        status: {
+            type: String
         }
-    ]
+    }],
 }, {
     timestamps: true,
 });
