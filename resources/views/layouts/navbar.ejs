@@ -1,5 +1,5 @@
 <% let count = 0 %>
-<% if (list_notification) { %>
+<% if (typeof list_notification !== 'undefined' && list_notification !== null) { %>
     <% list_notification.request_from.forEach(element => { %>
         <% if (element.status == 'new') { %>
             <% count++ %> 
