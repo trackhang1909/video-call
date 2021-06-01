@@ -4,8 +4,6 @@ $(document).ready(function () {
         let fromId = $('.fromUser').attr('id');
         let toId = $(this).attr('id');
 
-        console.log(toId);
-
         $(this).attr('class', 'btn btn-danger btn-sm')
         $(this).text('Hủy lời mời')
         $.ajax({

@@ -21,46 +21,62 @@
                 <ul id="nav">
                     <li id="notification_li">
                         <i id="notificationLink" 
-                            class="
-                                <% if (count>0) { %>
-                                    fas fa-bell fa-lg
-                                <% } else { %>
-                                    far fa-bell fa-lg
-                                <% } %>">
-                                <!-- class bell -->
+                            class="<% if (count>0) { %>
+                                        fas fa-bell fa-lg
+                                    <% } else { %>
+                                        far fa-bell fa-lg
+                                    <% } %>">
+                                    <!-- class bell -->
                                 
-                                <!-- if new notification -->
-                                <% if (count>0) { %>
-                                    <span id="notification_count"><%=count%></span>
-                                <% } %>
-                            </i>
-                            <div id="notificationContainer">
+                            <!-- if new notification -->
+                            <% if (count>0) { %>
+                                <span id="notification_count"><%=count%></span>
+                            <% } %>
+                        </i>
+                        <div id="notificationContainer">
                             <div id="notificationTitle">Thông báo</div>
                             <div id="notificationsBody" class="notifications">
                                 <table class="table">
                                     <tbody>
                                     <% if (list_notification) { %>
                                         <% list_notification.request_from.forEach(element => { %>
-                                            <tr class="align-middle">
-                                                <td>
-                                                    <div class="avatar-circle">
-                                                        <span class="avatar-initials">A</span>
-                                                    </div>
-                                                </td>
-                                                <td><%= element.user.fullname %> </td>
-                                                <td>
-                                                    <a class="btn btn-success btn-sm" href="" role="button">Đồng ý</a>
-                                                    <button onclick="addFriend(this)" type="button" class="btn btn-danger btn-sm">Từ chối</button>
-                                                </td>
-                                            </tr>
+                                            <% if (element.status == 'new') { %>
+                                                <tr class="align-middle new-notification" style="background-color: aqua;">
+                                                    <td>
+                                                        <div class="avatar-circle">
+                                                            <span class="avatar-initials">A</span>
+                                                        </div>
+                                                    </td>
+                                                    <td class="line-notification">Lời mời kết bạn từ <%= element.user.fullname %></td>
+                                                    <td>
+                                                        <button id="<%=element.user.id%>" class="btn btn-success btn-sm acceptBtn" type="button">Đồng ý</button>
+                                                        <button id="<%=element.user.id%>" type="button" class="btn btn-danger btn-sm declineBtn">Từ chối</button>
+                                                    </td>
+                                                </tr>
+                                            <% } else { %>
+                                                <tr class="align-middle new-notification" >
+                                                    <td>
+                                                        <div class="avatar-circle">
+                                                            <span class="avatar-initials">A</span>
+                                                        </div>
+                                                    </td>
+                                                    <td class="line-notification" >Lời mời kết bạn từ <%= element.user.fullname %></td>
+                                                    <td>
+                                                        <button id="<%=element.user.id%>" class="btn btn-success btn-sm acceptBtn" type="button">Đồng ý</button>
+                                                        <button id="<%=element.user.id%>" type="button" class="btn btn-danger btn-sm declineBtn">Từ chối</button>
+                                                    </td>
+                                                </tr>
+                                            <% } %> 
+                                            
                                         <% }) %>
                                     <% } %>
                                     </tbody>
                                 </table>
                             </div>
-                            <div id="notificationFooter"><a href="/account-detail">See All</a></div>
+                            <div id="notificationFooter">
+                                <a href="/account-detail">See All</a>
                             </div>
-                        
+                        </div>
                     </li>
                 </ul>
                 <div class="float-left fromUser" id="<%=user.id%>">
@@ -69,7 +85,7 @@
                             <span class="avatar-initials">K</span>
                         </div>
                     </div>
-                    <div class="btn-group h-40">
+                    <div class="btn-group h-40 w-170">
                         <button type="button" class="btn btn-user-setting dropdown-toggle" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false">
                             <%= user.fullname %> 
                         </button>

@@ -16,30 +16,32 @@
             <p>Tên: <%=user.fullname %> </p>
             <p>Email: <%=user.email %> </p>
         </div>
-        <div class="col-12 col-md-4">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th class="text-center" scope="col" colspan="3">Danh sách bạn bè</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <% user.list_friends.forEach(element => { %>
-                        <tr class="align-middle">
-                            <td>
-                                <div class="avatar-circle">
-                                    <span class="avatar-initials">A</span>
-                                </div>
-                            </td>
-                            <td><%= element.fullname %> </td>
-                            <td>
-                                <a class="btn btn-success btn-sm" href="" role="button">Gọi</a>
-                                <button onclick="addFriend(this)" type="button" class="btn btn-danger btn-sm">Hủy kết bạn</button>
-                            </td>
+        <div id="middle-panel" class="col-12 col-md-4">
+            <div class="middle-panel-content">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th class="text-center" scope="col" colspan="3">Danh sách bạn bè</th>
                         </tr>
-                    <% }) %>
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        <% user.list_friends.forEach(element => { %>
+                            <tr class="align-middle">
+                                <td>
+                                    <div class="avatar-circle">
+                                        <span class="avatar-initials">A</span>
+                                    </div>
+                                </td>
+                                <td><%= element.fullname %> </td>
+                                <td>
+                                    <a class="btn btn-success btn-sm" href="" role="button">Gọi</a>
+                                    <button id="<%= element.id %>" type="button" class="btn btn-danger btn-sm unfriendBtn">Hủy kết bạn</button>
+                                </td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
         </div>
         <div id="right-panel" class="col-12 col-md-4" style="background-color: burlywood;">
             <div class="right-panel-content">
@@ -88,8 +90,8 @@
                                     </td>
                                     <td><%= element.user.fullname %> </td>
                                     <td>
-                                        <a class="btn btn-success btn-sm" href="" role="button">Đồng ý</a>
-                                        <button onclick="addFriend(this)" type="button" class="btn btn-danger btn-sm">Từ chối</button>
+                                        <button id="<%=element.user.id%>" class="btn btn-success btn-sm acceptBtn" type="button">Đồng ý</button>
+                                        <button id="<%=element.user.id%>" type="button" class="btn btn-danger btn-sm declineBtn">Từ chối</button>
                                     </td>
                                 </tr>
                             <% }) %>    

@@ -75,24 +75,38 @@ if (window.location.pathname === '/call') {
 
 $(document).ready(function () {
     $('body').on('click', '#notificationLink', function (e) {
-        $("#notificationContainer").fadeToggle(300);
-        $("#notification_count").fadeOut("slow");
-        $('#notificationLink').attr('class', 'far fa-bell fa-lg');
+        if ($('#notificationContainer').css('display') == 'none') {
+            $("#notificationContainer").fadeToggle(300);
+            $("#notification_count").fadeOut("slow");
+            $('#notificationLink').attr('class', 'far fa-bell fa-lg');
 
-        let userId = $('.fromUser').attr('id');
+            let userId = $('.fromUser').attr('id');
 
-        $.ajax({
-            type: "post",
-            url: "/notify/seen/" + userId,
-        });
+            $.ajax({
+                type: "post",
+                url: "/notify/seen/" + userId,
+            });
 
-        return false;
+            return false;
+        } else {
+            $('.new-notification').css('background-color', 'white')
+        }
+
+
     });
 
     //Document Click hiding the popup 
-    $(document).on('click', function () {
-        // $("#notificationContainer").hide();
-        $("#notificationContainer").fadeOut(300);
+    $(document).on('click', function (e) {
+        if ((e.target.id == "notificationsBody") == false
+            && (e.target.id == "notificationTitle") == false
+            && (e.target.id == "notificationFooter") == false
+            && (e.target.tagName == 'TD') == false) {
+
+            // Hide notification board
+            $("#notificationContainer").fadeOut(300);
+            // Clear new notification
+            $('.new-notification').css('background-color', 'white')
+        }
     });
 
     // Popup on click
@@ -101,4 +115,55 @@ $(document).ready(function () {
     //     // $('#notificationLink').attr('class', 'far fa-bell fa-lg');
     //     return false;
     // })
+
+    $('body').on('click', '.acceptBtn', function (e) {
+        let userId = $('.fromUser').attr('id');
+        let toId = $(this).attr('id');
+
+        $.ajax({
+            type: "post",
+            url: "user/accept/" + toId,
+            data: { userId },
+            success: function (response) {
+                $('#right-panel').load('/account-detail .right-panel-content')
+                $('#middle-panel').load('/account-detail .middle-panel-content')
+                $('.navbar').load('/ #nav-content')
+                socket.emit("Client-sent-data", toId);
+            }
+        });
+    });
+
+    $('body').on('click', '.declineBtn', function (e) {
+        let userId = $('.fromUser').attr('id');
+        let toId = $(this).attr('id');
+
+        $.ajax({
+            type: "post",
+            url: "user/decline/" + toId,
+            data: { userId },
+            success: function (response) {
+                $('#right-panel').load('/account-detail .right-panel-content')
+                $('#middle-panel').load('/account-detail .middle-panel-content')
+                $('.navbar').load('/ #nav-content')
+                socket.emit("Client-sent-data", toId);
+            }
+        });
+    });
+
+    $('body').on('click', '.unfriendBtn', function (e) {
+        let userId = $('.fromUser').attr('id');
+        let toId = $(this).attr('id');
+
+        $.ajax({
+            type: "post",
+            url: "user/unfriend/" + toId,
+            data: { userId },
+            success: function (response) {
+                $('#right-panel').load('/account-detail .right-panel-content')
+                $('#middle-panel').load('/account-detail .middle-panel-content')
+                $('.navbar').load('/ #nav-content')
+                socket.emit("Client-sent-data", toId);
+            }
+        });
+    });
 })

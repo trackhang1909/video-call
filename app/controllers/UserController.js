@@ -47,7 +47,7 @@ class HomeController {
             await Notification.create(dataNotification);
         }
 
-        let toUserData = await Notification.findOne({ id_user: toUser }).populate('request_from')
+        let toUserData = await Notification.findOne({ id_user: toUser }).populate('request_from.user')
 
         return res.json({
             success: true,
@@ -96,6 +96,66 @@ class HomeController {
                 success: false
             })
         }
+    }
+
+    acceptRequest = async (req, res, next) => {
+        // Get data from client
+        let toId = req.params.toId
+        let userId = req.body.userId
+
+        let toUser = await User.findById(toId)
+        let user = await User.findById(userId)
+
+        // add user to list friends and remove notification
+        await Suggest.findOneAndDelete({ id_user: toUser, request_to: user })
+        await Suggest.findOneAndDelete({ id_user: user, request_to: toUser })
+        await User.findByIdAndUpdate(userId, { $push: { list_friends: toUser } })
+        await User.findByIdAndUpdate(toId, { $push: { list_friends: user } })
+        await Notification.findOneAndUpdate({ id_user: user }, { $pull: { request_from: { user: toUser } } })
+
+        return res.json({
+            success: true
+        })
+    }
+
+    declineRequest = async (req, res, next) => {
+        // Get data from client
+        let toId = req.params.toId
+        let userId = req.body.userId
+
+        let toUser = await User.findById(toId)
+        let user = await User.findById(userId)
+
+        // remove notification
+        await Suggest.findOneAndUpdate({ $and: [{ id_user: user }, { request_to: toUser }] }, { status: 0 })
+
+        await Suggest.findOneAndUpdate({ $and: [{ id_user: toUser }, { request_to: user }] }, { status: 0 })
+
+        await Notification.findOneAndUpdate({ id_user: user }, { $pull: { request_from: { user: toUser } } })
+
+        return res.json({
+            success: true
+        })
+    }
+
+    unfriend = async (req, res, next) => {
+        // Get data from client
+        let toId = req.params.toId
+        let userId = req.body.userId
+
+        let toUser = await User.findById(toId)
+        let user = await User.findById(userId)
+
+        // add user to list friends and remove notification
+        await Suggest.findOneAndDelete({ id_user: toUser, request_to: user })
+        await Suggest.findOneAndDelete({ id_user: user, request_to: toUser })
+        await User.findByIdAndUpdate(userId, { $pull: { list_friends: toId } })
+        await User.findByIdAndUpdate(toId, { $pull: { list_friends: userId } })
+        await Notification.findOneAndUpdate({ id_user: user }, { $pull: { request_from: { user: toUser } } })
+
+        return res.json({
+            success: true
+        })
     }
 }
 
