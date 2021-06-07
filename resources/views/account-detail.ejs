@@ -7,7 +7,7 @@
         <div class="col-12 col-md-4" style="background-color: aqua;">
             <p>Thông tin tài khoản</p>
             <div class="avatar-wrapper">
-                <img class="profile-pic" src="" />
+                <img class="profile-pic" src="<%=user.photo_url  %>" />
                 <div class="upload-button">
                     <i class="fa fa-arrow-circle-up" aria-hidden="true"></i>
                 </div>
@@ -28,8 +28,15 @@
                         <% user.list_friends.forEach(element => { %>
                             <tr class="align-middle">
                                 <td>
-                                    <div class="avatar-circle">
-                                        <span class="avatar-initials">A</span>
+                                    <!-- <div class="avatar-circle"> -->
+                                        <!-- <span class="avatar-initials"> -->
+                                    <!-- <img class="avatar-circle" src="" alt=""> -->
+                                        <!-- </span> -->
+                                    <!-- </div> -->
+
+                                    <div id="<%= element.id %>" class='c-avatar friends'>
+                                        <img class='c-avatar__image' src='<%=element.photo_url%>' alt=''>
+                                        <!-- <span class='c-avatar__status'></span> -->            
                                     </div>
                                 </td>
                                 <td><%= element.fullname %> </td>
@@ -56,8 +63,8 @@
                             <% if (element.status != 2) { %>
                                 <tr class="align-middle">
                                     <td>
-                                        <div class="avatar-circle">
-                                            <span class="avatar-initials">A</span>
+                                        <div class='c-avatar'>
+                                            <img class='c-avatar__image' src='<%=element.request_to.photo_url%>' alt=''>
                                         </div>
                                     </td>
                                     <td><%= element.request_to.fullname %> </td>
@@ -84,8 +91,8 @@
                             <% list_notification.request_from.forEach(element => { %>
                                 <tr class="align-middle">
                                     <td>
-                                        <div class="avatar-circle">
-                                            <span class="avatar-initials">A</span>
+                                        <div class='c-avatar'>
+                                            <img class='c-avatar__image' src='<%=element.user.photo_url%>' alt=''>
                                         </div>
                                     </td>
                                     <td><%= element.user.fullname %> </td>
