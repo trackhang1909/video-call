@@ -7,6 +7,8 @@ function addFriend(event) {
     }
 }
 
+$("#loading").show();
+
 if (window.location.pathname === '/') {
     //Click call
     let btnCall = document.getElementById('call');
