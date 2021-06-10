@@ -1,4 +1,3 @@
-let socket = io()
 let listUserConnect
 let friendsIdArr = [];
 

@@ -135,6 +135,8 @@ class AuthController {
                             // -> generate user token
                             // -> redirect index page
                             if (result) {
+                                //Add global variable
+                                global.userId = user._id
                                 if (remember == 'on') {
                                     // generate user token
                                     let token = jwt.sign({ id: user._id, username: user.username }, 'secret', { expiresIn: '10y' })
@@ -203,6 +205,9 @@ class AuthController {
 
     // Facebook Authorize
     facebookAuth(req, res, next) {
+        //Add global variable
+        global.userId = req.user._id
+
         // create token
         let token = jwt.sign({ id: req.user._id }, 'secret', { expiresIn: '1d' })
 
@@ -218,6 +223,9 @@ class AuthController {
 
     // Google Authorize
     googleAuth(req, res, next) {
+        //Add global variable
+        global.userId = req.user._id
+
         // create token
         let token = jwt.sign({ id: req.user._id }, 'secret', { expiresIn: '1d' })
 
