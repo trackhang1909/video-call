@@ -1,50 +1,91 @@
 let socket = io()
-
+let listUserConnect
+let friendsIdArr = [];
 
 $(document).ready(function () {
-    let friendsIdArr = [];
-
-    // get id of list friends
-    $('.friends').each(function (i, e) {
-        friendsIdArr.push(e.id);
-    });
-
-    console.log(friendsIdArr);
-
     let fromId = $('.fromUser').attr('id');
 
     if (socket.connect) {
         console.log('socket.io is connected.')
         if (fromId) {
-            socket.emit("Client-sent-data", fromId);
+            socket.emit("new user", fromId);
         }
     }
 
-    $('#callBtn').on('click', function (e) {
-        alert('click')
+    socket.on("server send user", (data) => {
+        friendsIdArr = []
+        listUserConnect = data
+
+        // get id of list friends
+        $('.friends').each(function (i, e) {
+            friendsIdArr.push(e.id);
+        });
+
+        // Get list user online is friends
+        let listFriendsOnline = arrayMatch(listUserConnect, friendsIdArr)
+
+        listFriendsOnline.forEach(element => {
+            $('#' + element).append("<span class='c-avatar__status'></span>")
+        })
+    })
+
+    socket.on("user disconnected", (data) => {
+        friendsIdArr = []
+
+        // get id of list friends
+        $('.friends').each(function (i, e) {
+            friendsIdArr.push(e.id);
+        });
+
+        listUserConnect = data
+
+        // Get list user online is friends
+        let listFriendsOnline = arrayMatch(listUserConnect, friendsIdArr)
+
+        // Get list user offline is friends
+        let listFriendsOffline = arrayNotMatch(friendsIdArr, listFriendsOnline)
+
+        if (listFriendsOffline.length != 0) {
+            // Remove online status from avatar
+            listFriendsOffline.forEach(element => {
+                $('#' + element + ' .c-avatar__status').remove()
+            })
+        } else {
+            if (friendsIdArr.length != listFriendsOnline.length) {
+                // All friends off
+                friendsIdArr.forEach(element => {
+                    $('#' + element + ' .c-avatar__status').remove()
+                })
+            }
+        }
     })
 
     socket.on("Server-sent-data", function (data) {
         if (data.id_user == fromId || data == fromId) {
             $('#right-panel').load('/account-detail .right-panel-content')
             $('.navbar').load('/ #nav-content')
-            $('#middle-panel').load('/account-detail .middle-panel-content')
+            $('#middle-panel').load('/account-detail .middle-panel-content',
+                () => {
+                    // connect after load
+                    socket.emit("new user", fromId)
+                }
+            )
         }
+    })
 
-        friendsIdArr.forEach(element => {
-            if (element == data) {
+    // Find element match of two array
+    function arrayMatch(arr1, arr2) {
+        var arr = [];
+        arr = arr1.filter(element => arr2.includes(element));
 
-                $('#' + element).append("<span class='c-avatar__status'></span>")
-                // $('#' + element).children(".c-avatar__status").css("display", "none")
+        return arr;
+    }
 
-                console.log('zzzz');
-            }
+    // Find elemen NOT match of two array
+    function arrayNotMatch(arr1, arr2) {
+        var arr = [];
+        arr = arr1.filter(element => !arr2.includes(element));
 
-
-        });
-    });
-
-    // if (socket.disconnect) {
-    //     isOnlineArr = isOnlineArr.filter(item => item !== fromId)
-    // }
+        return arr;
+    }
 })

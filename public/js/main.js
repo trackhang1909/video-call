@@ -122,15 +122,37 @@ $(document).ready(function () {
         let userId = $('.fromUser').attr('id');
         let toId = $(this).attr('id');
 
+        // Show loading screen
+        $("#loading").show();
+
         $.ajax({
             type: "post",
             url: "user/accept/" + toId,
             data: { userId },
             success: function (response) {
+                // Hide loading screen
+                setTimeout(function () {
+                    $("#loading").hide();
+                }, 700);
+
                 $('#right-panel').load('/account-detail .right-panel-content')
-                $('#middle-panel').load('/account-detail .middle-panel-content')
+                $('#middle-panel').load(
+                    // url
+                    '/account-detail .middle-panel-content',
+                    // callback
+                    () => {
+                        friendsIdArr = [];
+
+                        $('.friends').each(function (i, e) {
+                            friendsIdArr.push(e.id);
+                        });
+
+                        console.log(friendsIdArr);
+                    }
+                )
                 $('.navbar').load('/ #nav-content')
                 socket.emit("Client-sent-data", toId);
+                // socket.emit("new user", userId);
             }
         });
     });
@@ -139,15 +161,38 @@ $(document).ready(function () {
         let userId = $('.fromUser').attr('id');
         let toId = $(this).attr('id');
 
+        // Show loading screen
+        $("#loading").show();
+
         $.ajax({
             type: "post",
             url: "user/decline/" + toId,
             data: { userId },
             success: function (response) {
+
+                // Hide loading screen
+                setTimeout(function () {
+                    $("#loading").hide();
+                }, 700);
+
                 $('#right-panel').load('/account-detail .right-panel-content')
-                $('#middle-panel').load('/account-detail .middle-panel-content')
+                $('#middle-panel').load(
+                    // url
+                    '/account-detail .middle-panel-content',
+                    // callback
+                    () => {
+                        friendsIdArr = [];
+
+                        $('.friends').each(function (i, e) {
+                            friendsIdArr.push(e.id);
+                        });
+
+                        console.log(friendsIdArr);
+                    }
+                )
                 $('.navbar').load('/ #nav-content')
                 socket.emit("Client-sent-data", toId);
+                socket.emit("new user", userId);
             }
         });
     });
@@ -156,15 +201,25 @@ $(document).ready(function () {
         let userId = $('.fromUser').attr('id');
         let toId = $(this).attr('id');
 
+        // Show loading screen
+        $("#loading").show();
+
         $.ajax({
             type: "post",
             url: "user/unfriend/" + toId,
             data: { userId },
             success: function (response) {
+
+                // Hide loading screen
+                setTimeout(function () {
+                    $("#loading").hide();
+                }, 700);
+
                 $('#right-panel').load('/account-detail .right-panel-content')
                 $('#middle-panel').load('/account-detail .middle-panel-content')
                 $('.navbar').load('/ #nav-content')
                 socket.emit("Client-sent-data", toId);
+                socket.emit("new user", userId);
             }
         });
     });
