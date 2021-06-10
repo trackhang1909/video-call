@@ -9,6 +9,7 @@ const flash = require("express-flash");
 const logger = require('morgan');
 const connectDatabase = require('./config/database');
 const http = require('http');
+let activeUsers = new Set();
 const User = require("./app/models/User");
 
 const app = express();
@@ -44,6 +45,27 @@ const server = http.createServer(app);
 const io = require('socket.io')(server);
 
 io.on('connection', (socket) => {
+
+    console.log('connected')
+    socket.on("new user", (data) => {
+        socket.id = data
+        activeUsers.add(data);
+        io.emit("server send user", [...activeUsers])
+        console.log(activeUsers.keys());
+    });
+
+    socket.on("disconnect", function () {
+        console.log('disconnected');
+        activeUsers.delete(socket.id);
+        io.emit("user disconnected", [...activeUsers])
+        console.log(activeUsers.keys());
+    });
+
+    //  server receive data
+    socket.on("Client-sent-data", (data) => {
+        socket.broadcast.emit("Server-sent-data", data);
+    });
+  
     //Save socket id in users table
     if (global.userId) {
         User.findByIdAndUpdate(global.userId, { socket_id: socket.id })
@@ -51,15 +73,8 @@ io.on('connection', (socket) => {
                 console.log('Save socket id success')
             })
             .catch(error => console.log(error))
-    }
-
-    socket.on("disconnect", function () {
-        console.log('disconnected');
-    });
-    //  server receive data
-    socket.on("Client-sent-data", function (data) {
-        socket.broadcast.emit("Server-sent-data", data);
-    });
+    }  
+  
     // Send private event to client
     socket.on('call-video', async (data) => {
         const userCallFrom = await User.findById(data.callFromId).lean();
