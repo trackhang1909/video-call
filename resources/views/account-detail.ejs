@@ -13,8 +13,8 @@
                 </div>
                 <input class="file-upload" type="file" accept="image/*"/>
             </div>
-            <p>Tên: <%=user.fullname %> </p>
-            <p>Email: <%=user.email %> </p>
+            <p>Tên: <%= user.fullname %> </p>
+            <p>Email: <%= user.email %> </p>
         </div>
         <div id="middle-panel" class="col-12 col-md-4">
             <div class="middle-panel-content">
@@ -39,9 +39,9 @@
                                         <!-- <span class='c-avatar__status'></span> -->            
                                     </div>
                                 </td>
-                                <td><%= element.fullname %> </td>
+                                <td><%= element.fullname %></td>
                                 <td>
-                                    <a class="btn btn-success btn-sm" href="" role="button">Gọi</a>
+                                    <button type="button" class="btn btn-success btn-sm btn-call-video" data-call-from-id="<%= userId %>" data-call-to-id="<%= element._id %>">Gọi</button>
                                     <button id="<%= element.id %>" type="button" class="btn btn-danger btn-sm unfriendBtn">Hủy kết bạn</button>
                                 </td>
                             </tr>

@@ -18,6 +18,7 @@ class HomeController {
 
             let payload = verify(token, 'secret')
             let userId = payload.id
+            global.userId = userId
 
             let user = await User.findById(userId)
 
@@ -93,7 +94,7 @@ class HomeController {
 
             title = user.fullname
 
-            return res.render('account-detail', { title, isLogged, user, list_suggest, list_notification });
+            return res.render('account-detail', { title, isLogged, user, list_suggest, list_notification, userId });
         }
         return res.render('account-detail', { isLogged });
     }
