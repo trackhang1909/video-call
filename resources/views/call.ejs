@@ -6,7 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
     <script src="https://unpkg.com/peerjs@1.3.1/dist/peerjs.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <title>Document</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
@@ -22,8 +24,8 @@
             <div class="position-relative">
                 <div class="position-absolute top-50 start-0 translate-middle-y">
                     <div class="btn-group dropup">
-                        <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                            Chi tiết cuộc gọi
+                        <button type="button" class="btn btn-secondary dropdown-toggle btn-detail-call" data-bs-toggle="dropdown" aria-expanded="false">
+                            Chi tiết
                         </button>
                         <ul class="dropdown-menu">
                             <li><span id="my-peer-id" class="dropdown-item"></span></li>
@@ -34,6 +36,105 @@
                     <button onclick="window.location = '/'" type="button" class="btn btn-light btn-call">
                         <i class="fa fa-phone" aria-hidden="true"></i>
                     </button>
+                </div>
+            </div>
+        </div>
+        <div class="chatbox-holder">
+            <div class="chatbox">
+                <div class="chatbox-top">
+                    <div class="chatbox-avatar">
+                        <a target="_blank" href="https://www.facebook.com/mfreak"><img src="https://gravatar.com/avatar/2449e413ade8b0c72d0a15d153febdeb?s=512&d=https://codepen.io/assets/avatars/user-avatar-512x512-6e240cf350d2f1cc07c2bed234c3a3bb5f1b237023c204c782622e80d6b212ba.png" /></a> 
+                    </div>
+                    <div class="chat-partner-name">
+                        <span class="status online"></span>
+                        <a target="_blank" href="https://www.facebook.com/mfreak">Mamun Khandaker</a>
+                    </div>
+                    <div class="chatbox-icons">
+                        <a href="javascript:void(0);"><i class="fa fa-minus"></i></a>
+                    </div>      
+                </div>
+                
+                <div class="chat-messages">
+                    <div class="message-box-holder">
+                        <div class="message-box">
+                            Hello
+                        </div>
+                    </div>
+                
+                    <div class="message-box-holder">
+                        <div class="message-sender">
+                            Mamun Khandaker
+                        </div>
+                        <div class="message-box message-partner">
+                            Hi.
+                        </div>
+                    </div>
+                    
+                    <div class="message-box-holder">
+                        <div class="message-box">
+                            How are you doing?
+                        </div>
+                    </div>
+                    
+                    <div class="message-box-holder">
+                        <div class="message-sender">
+                            Mamun Khandaker
+                        </div>
+                        <div class="message-box message-partner">
+                            I'm doing fine. How about you?
+                        </div>
+                    </div>
+                    
+                    <div class="message-box-holder">
+                        <div class="message-box">
+                            I am fine.
+                        </div>
+                    </div>
+                    
+                    <div class="message-box-holder">
+                        <div class="message-box">
+                            Do you know why I knocked you today?
+                        </div>
+                    </div>
+                    
+                    <div class="message-box-holder">
+                        <div class="message-box">
+                            There's something important I would like to share with you. Do you have some time?
+                        </div>
+                    </div>
+                    
+                    <div class="message-box-holder">
+                        <div class="message-sender">
+                            Mamun Khandaker
+                        </div>
+                        <div class="message-box message-partner">
+                            Yeah sure. Let's meet in the Einstein cafe this evening and discuss the matter.
+                        </div>
+                    </div>
+                    
+                    <div class="message-box-holder">
+                        <div class="message-sender">
+                            Mamun Khandaker
+                        </div>
+                        <div class="message-box message-partner">
+                            I thought of coming to your place and discuss about it but I had to finish my projects and I didn't have enough time to go out of the house.
+                        </div>
+                    </div>      
+                </div>
+                
+                <div class="chat-input-holder">
+                    <textarea class="chat-input"></textarea>
+                    <input type="submit" value="Send" class="message-send" />
+                </div>
+                <div class="attachment-panel">
+                    <a href="#" class="fa fa-thumbs-up"></a>
+                    <a href="#" class="fa fa-camera"></a>
+                    <a href="#" class="fa fa-video-camera"></a>
+                    <a href="#" class="fa fa-image"></a>
+                    <a href="#" class="fa fa-paperclip"></a>
+                    <a href="#" class="fa fa-link"></a>
+                    <a href="#" class="fa fa-trash-o"></a>
+                    <a href="#" class="fa fa-search"></a>
                 </div>
             </div>
         </div>

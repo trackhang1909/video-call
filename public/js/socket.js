@@ -1,5 +1,3 @@
-let socket = io()
-
 $(document).ready(function () {
     $('#callBtn').on('click', function (e) {
         alert('click')

@@ -27,7 +27,10 @@ const User = new Schema({
     },
     list_friends: [
         { type: Schema.Types.ObjectId, ref: 'User' }
-    ]
+    ],
+    socket_id: {
+        type: String
+    }
 }, {
     timestamps: true,
 });

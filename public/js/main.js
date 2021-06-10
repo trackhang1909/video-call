@@ -1,81 +1,17 @@
-$("#loading").hide();
-
-function addFriend(event) {
-    if (event.className === 'btn btn-secondary btn-sm') {
-        event.parentNode.innerHTML = '<button onclick="addFriend(this)" type="button" class="btn btn-danger btn-sm">Hủy kết bạn</button>'
-    }
-    else {
-        event.parentNode.innerHTML = '<button onclick="addFriend(this)" type="button" class="btn btn-secondary btn-sm">Kết bạn</button>';
-    }
-}
-
-if (window.location.pathname === '/') {
-    //Click call
-    let btnCall = document.getElementById('call');
-    btnCall.addEventListener('click', () => {
-        const id = document.getElementById('remote-id').value;
-        window.location = '/call?id=' + id;
-    });
-}
-
-if (window.location.pathname === '/call') {
-
-    const peer = new Peer();
-    let streamCall;
-    let url_string = window.location.href;
-    let url = new URL(url_string);
-    let remoteId = url.searchParams.get('id');
-
-    function openStream() {
-        const config = { audio: false, video: true };
-        return navigator.mediaDevices.getUserMedia(config);
-    }
-
-    function playStream(idVideoTag, stream) {
-        const video = document.getElementById(idVideoTag);
-        video.srcObject = stream;
-        video.play();
-    }
-
-    //Show peer id
-    peer.on('open', id => {
-        let myPeerId = document.getElementById('my-peer-id');
-        myPeerId.innerHTML = 'Mã cuộc gọi: ' + id;
-    });
-
-    //Call
-    openStream().then(stream => {
-        playStream('local-stream', stream);
-        streamCall = stream;
-        let falseId = 0;
-        let interval = setInterval(() => {
-            if (remoteId !== null) {
-                const call = peer.call(remoteId, streamCall);
-                call.on('stream', remoteStream => {
-                    playStream('remote-stream', remoteStream);
-                    clearInterval(interval);
-                    console.log('Clear success');
-                });
-                falseId++;
-                if (falseId === 10) {
-                    clearInterval(interval);
-                    alert('Mã cuộc gọi không tồn tại');
-                }
-            }
-        }, 1000);
-    });
-
-    //Answer
-    peer.on('call', call => {
-        call.answer(streamCall);
-        call.on('stream', remoteStream => {
-            playStream('remote-stream', remoteStream);
-        });
-    });
-
-}
+let socket = io();
 
 $(document).ready(function () {
+    $('#loading').hide();
+
+    // Answer call
+    socket.on('answer-call', data => {
+        $('#answerModal .modal-body span').text('Bạn nhận được cuộc gọi từ ' + data.userCallFromName);
+        $('#answerModal .modal-footer .btn-success').on('click', () => {
+            window.location = '/call?id=' + data.peerId;
+        })
+        $('#answerModal').modal('show');
+    });
+
     $('body').on('click', '#notificationLink', function (e) {
         if ($('#notificationContainer').css('display') == 'none') {
             $("#notificationContainer").fadeToggle(300);
@@ -93,8 +29,6 @@ $(document).ready(function () {
         } else {
             $('.new-notification').css('background-color', 'white')
         }
-
-
     });
 
     //Document Click hiding the popup 
@@ -169,3 +103,114 @@ $(document).ready(function () {
         });
     });
 })
+
+function addFriend(event) {
+    if (event.className === 'btn btn-secondary btn-sm') {
+        event.parentNode.innerHTML = '<button onclick="addFriend(this)" type="button" class="btn btn-danger btn-sm">Hủy kết bạn</button>'
+    }
+    else {
+        event.parentNode.innerHTML = '<button onclick="addFriend(this)" type="button" class="btn btn-secondary btn-sm">Kết bạn</button>';
+    }
+}
+
+if (window.location.pathname === '/') {
+    //Click call
+    let btnCall = document.getElementById('call');
+    btnCall.addEventListener('click', () => {
+        const id = document.getElementById('remote-id').value;
+        window.location = '/call?id=' + id;
+    });
+}
+
+if (window.location.pathname === '/account-detail') {
+    //Add event listener - click call
+    let btnCalls = document.getElementsByClassName("btn-call-video");
+
+    let clickCall = (event) => {
+        const callFromId = event.target.dataset.callFromId;
+        const callToId = event.target.dataset.callToId;
+        window.location = '/call?callFromId=' + callFromId + '&callToId=' + callToId;
+    };
+
+    Array.from(btnCalls).forEach((element) => {
+        element.addEventListener('click', clickCall);
+    });
+}
+
+if (window.location.pathname === '/call') {
+
+    const peer = new Peer();
+    let streamCall;
+    // Get remote id
+    const url_string = window.location.href;
+    const url = new URL(url_string);
+    const remoteId = url.searchParams.get('id');
+    // Get call from - to id
+    const callFromId = url.searchParams.get('callFromId');
+    const callToId = url.searchParams.get('callToId');
+    let peerId = null;
+
+    function openStream() {
+        const config = { audio: false, video: true };
+        return navigator.mediaDevices.getUserMedia(config);
+    }
+
+    function playStream(idVideoTag, stream) {
+        const video = document.getElementById(idVideoTag);
+        video.srcObject = stream;
+        video.play();
+    }
+
+    //Show peer id
+    peer.on('open', id => {
+        let myPeerId = document.getElementById('my-peer-id');
+        myPeerId.innerHTML = 'Mã cuộc gọi: ' + id;
+        peerId = id;
+        //Call
+        openStream().then(stream => {
+            playStream('local-stream', stream);
+            streamCall = stream;
+            let falseId = 0;
+            // Check call id
+            let interval = setInterval(() => {
+                if (remoteId !== null) {
+                    const call = peer.call(remoteId, streamCall);
+                    call.on('stream', remoteStream => {
+                        playStream('remote-stream', remoteStream);
+                        clearInterval(interval);
+                        console.log('Clear success');
+                    });
+                    falseId++;
+                    if (falseId === 10) {
+                        clearInterval(interval);
+                        alert('Mã cuộc gọi không tồn tại');
+                    }
+                }
+            }, 1000);
+            // Emit event to server
+            if (callFromId !== null && callToId !== null) {
+                const data = {
+                    callFromId,
+                    callToId,
+                    peerId
+                }
+                socket.emit('call-video', data);
+            }
+        });
+    });
+
+    //Answer
+    peer.on('call', call => {
+        call.answer(streamCall);
+        call.on('stream', remoteStream => {
+            playStream('remote-stream', remoteStream);
+        });
+    });
+
+    $(function() {
+        $('.fa-minus').click(function() {    
+            $(this).closest('.chatbox').toggleClass('chatbox-min');
+        });
+    });
+
+}
