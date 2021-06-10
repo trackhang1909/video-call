@@ -239,8 +239,36 @@ body {
     text-overflow: ellipsis;
 }
 
+
 .btn-detail-call {
     margin-left: 20px;
+}
+
+/* #my-peer-id {
+    margin-left: 25px;
+} */
+
+.c-avatar {
+    position:relative;
+    display:inline-block;
+}
+
+.c-avatar__image {
+    width:40px;
+    height:40px;
+    object-fit:cover;
+    border-radius:100%;
+ }
+
+ .c-avatar__status {
+    width: 15px;
+    height: 15px;
+    background:#99CC00;
+    border:2px solid white;
+    position:absolute;
+    bottom:-8%;
+    right:-8%;
+    border-radius:100%;
 }
 
 /* Loading ajax */
