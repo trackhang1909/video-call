@@ -60,14 +60,59 @@ $(document).ready(function () {
         })
     })
 
-    $(".file-upload").on('change', function () {
-        readURL(this);
+    var readURL = function (input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+
+            reader.onload = function (e) {
+                $('.profile-pic').attr('src', e.target.result);
+            }
+
+            reader.readAsDataURL(input.files[0]);
+        }
+        console.log(input.files[0]);
+    }
+
+    $(".file-upload").on('change', function (e) {
+        $('#upload-avatar-form').submit()
+    })
+
+    // $('#upload-avatar-form').on('submit', function (e) {
+    //     e.preventDefault()
+    //     var form = $(this)[0];
+    //     $.ajax({
+    //         type: "post",
+    //         url: "user/upload",
+    //         enctype: 'multipart/form-data',
+    //         data: form,
+    //         processData: false,
+    //         contentType: false,
+    //         cache: false,
+    //         success: function (response) {
+    //             console.log(response);
+    //         }
+    //     });
+    // });
+
+    $('#upload-avatar-form').submit(function () {
+        let userId = $('.fromUser').attr('id');
+        $(this).ajaxSubmit({
+            data: { userId },
+
+            success: function (response) {
+                if (response.message == 'success') {
+                    $('#left-panel').load('/account-detail .left-panel-content')
+                    $('.navbar').load('/ #nav-content')
+                }
+            }
+        });
+        //Very important line, it disable the page refresh.
+        return false;
     });
 
     $(".upload-button").on('click', function () {
         $(".file-upload").click();
     });
-
 
     // if ($('.student-page').length != 0) {
     //     socket.on("Server-sent-data", function (data) {

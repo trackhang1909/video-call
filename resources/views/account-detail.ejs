@@ -4,17 +4,26 @@
 
 <div class="container-fluid" style="height: 100vh; position: fixed;">
     <div class="row full-height">
-        <div class="col-12 col-md-4" style="background-color: aqua;">
-            <p>Thông tin tài khoản</p>
-            <div class="avatar-wrapper">
-                <img class="profile-pic" src="<%=user.photo_url  %>" />
-                <div class="upload-button">
-                    <i class="fa fa-arrow-circle-up" aria-hidden="true"></i>
+        <div id="left-panel" class="col-12 col-md-4" style="background-color: aqua;">
+            <div class="left-panel-content">
+                <p>Thông tin tài khoản</p>
+                <div class="avatar-wrapper">
+                    <img class="profile-pic" src="<%=user.photo_url  %>" />
+                    <div class="upload-button">
+                        <i class="fa fa-arrow-circle-up" aria-hidden="true"></i>
+                    </div>
+                    <form 
+                        id="upload-avatar-form" 
+                        action="/user/upload"
+                        enctype="multipart/form-data" 
+                        method="POST">
+                        <input name="photo" class="file-upload" type="file"/>
+                    </form>
+                    
                 </div>
-                <input class="file-upload" type="file" accept="image/*"/>
+                <p>Tên: <%= user.fullname %> </p>
+                <p>Email: <%= user.email %> </p>
             </div>
-            <p>Tên: <%= user.fullname %> </p>
-            <p>Email: <%= user.email %> </p>
         </div>
         <div id="middle-panel" class="col-12 col-md-4">
             <div class="middle-panel-content">
@@ -40,8 +49,14 @@
                                     </div>
                                 </td>
                                 <td><%= element.fullname %></td>
-                                <td>
-                                    <button type="button" class="btn btn-success btn-sm btn-call-video" data-call-from-id="<%= userId %>" data-call-to-id="<%= element._id %>">Gọi</button>
+                                <td id="<%= element._id %>" class="actionBtn">
+                                    <!-- <button 
+                                        type="button" 
+                                        class="btn btn-success btn-sm btn-call-video" 
+                                        data-call-from-id="<%# userId %>" 
+                                        data-call-to-id="<%# element._id %>">
+                                        Gọi
+                                    </button> -->
                                     <button id="<%= element.id %>" type="button" class="btn btn-danger btn-sm unfriendBtn">Hủy kết bạn</button>
                                 </td>
                             </tr>

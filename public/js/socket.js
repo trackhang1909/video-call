@@ -24,6 +24,10 @@ $(document).ready(function () {
         let listFriendsOnline = arrayMatch(listUserConnect, friendsIdArr)
 
         listFriendsOnline.forEach(element => {
+            console.log($('#' + element + '.actionBtn').children('.btn.btn-success.btn-sm.btn-call-video'))
+            if ($('#' + element + '.actionBtn').children('.btn.btn-success.btn-sm.btn-call-video').length == 0) {
+                $('#' + element + '.actionBtn').append("<button type='button' class='btn btn-success btn-sm btn-call-video' data-call-from-id='" + fromId + "'data-call-to-id='" + element + "'>Gọi</button>")
+            }
             $('#' + element).append("<span class='c-avatar__status'></span>")
         })
     })
@@ -47,12 +51,18 @@ $(document).ready(function () {
         if (listFriendsOffline.length != 0) {
             // Remove online status from avatar
             listFriendsOffline.forEach(element => {
+                // Remove button call
+                $('#' + element + '.actionBtn').children('.btn.btn-success.btn-sm.btn-call-video').remove()
+                // Remove status
                 $('#' + element + ' .c-avatar__status').remove()
             })
         } else {
             if (friendsIdArr.length != listFriendsOnline.length) {
                 // All friends off
                 friendsIdArr.forEach(element => {
+                    // Remove button call
+                    $('#' + element + '.actionBtn').children('.btn.btn-success.btn-sm.btn-call-video').remove()
+                    // Remove status 
                     $('#' + element + ' .c-avatar__status').remove()
                 })
             }
@@ -80,7 +90,7 @@ $(document).ready(function () {
         return arr;
     }
 
-    // Find elemen NOT match of two array
+    // Find element NOT match of two array
     function arrayNotMatch(arr1, arr2) {
         var arr = [];
         arr = arr1.filter(element => !arr2.includes(element));

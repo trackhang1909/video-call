@@ -2,7 +2,7 @@ const Notification = require("../models/Notification");
 const Suggest = require("../models/Suggest");
 const User = require("../models/User");
 
-class HomeController {
+class UserController {
     // [POST] /user/request/:toId
     sendRequest = async (req, res) => {
         // Get data from client
@@ -157,6 +157,20 @@ class HomeController {
             success: true
         })
     }
+
+    uploadAvatar = async (req, res, next) => {
+        let userId = req.body.userId
+        let photo_url = '/' + req.file.destination.slice(7) + req.file.filename
+
+        await User.findByIdAndUpdate(
+            userId,
+            { photo_url: photo_url },
+        )
+
+        return res.json({
+            message: 'success'
+        })
+    }
 }
 
-module.exports = new HomeController();
+module.exports = new UserController();

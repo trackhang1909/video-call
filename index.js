@@ -65,7 +65,7 @@ io.on('connection', (socket) => {
     socket.on("Client-sent-data", (data) => {
         socket.broadcast.emit("Server-sent-data", data);
     });
-  
+
     //Save socket id in users table
     if (global.userId) {
         User.findByIdAndUpdate(global.userId, { socket_id: socket.id })
@@ -73,8 +73,8 @@ io.on('connection', (socket) => {
                 console.log('Save socket id success')
             })
             .catch(error => console.log(error))
-    }  
-  
+    }
+
     // Send private event to client
     socket.on('call-video', async (data) => {
         const userCallFrom = await User.findById(data.callFromId).lean();

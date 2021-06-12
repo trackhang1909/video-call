@@ -36,7 +36,7 @@ class AuthController {
                 email: email,
                 password: hash_password,
                 fullname: fullname,
-                photo_url: '/picture/avatar-png-default.png'
+                photo_url: '/img/user-default.png'
             }
 
             // save user
