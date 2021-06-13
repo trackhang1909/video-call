@@ -2,101 +2,150 @@
 <link rel="stylesheet" href="../css/avatarStyle.css">
 <script src="../js/profileUser.js"></script>
 
-<div class="container-fluid" style="height: 100vh; position: fixed;">
+<div class="container-fluid" style="height: 93%; position: fixed;">
     <div class="row full-height">
-        <div class="col-12 col-md-4" style="background-color: aqua;">
-            <p>Thông tin tài khoản</p>
-            <div class="avatar-wrapper">
-                <img class="profile-pic" src="" />
-                <div class="upload-button">
-                    <i class="fa fa-arrow-circle-up" aria-hidden="true"></i>
+        <div id="left-panel" class="col-12 col-md-4" style="background-color: aqua;">
+            <div class="left-panel-content">
+                <p>Thông tin tài khoản</p>
+                <div class="avatar-wrapper">
+                    <img class="profile-pic" src="<%=user.photo_url  %>"/>
+                    <div class="upload-button">
+                        <i class="fa fa-arrow-circle-up" aria-hidden="true"></i>
+                    </div>
+                    <form 
+                        id="upload-avatar-form" 
+                        action="/user/upload"
+                        enctype="multipart/form-data" 
+                        method="POST">
+                        <input name="photo" class="file-upload" type="file"/>
+                    </form>
+                    
                 </div>
-                <input class="file-upload" type="file" accept="image/*"/>
+                <p>Tên: <%= user.fullname %> </p>
+                <p>Email: <%= user.email %> </p>
             </div>
-            <p>Tên: <%= user.fullname %> </p>
-            <p>Email: <%= user.email %> </p>
         </div>
-        <div id="middle-panel" class="col-12 col-md-4">
-            <div class="middle-panel-content">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th class="text-center" scope="col" colspan="3">Danh sách bạn bè</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <% user.list_friends.forEach(element => { %>
-                            <tr class="align-middle">
-                                <td>
-                                    <div class="avatar-circle">
-                                        <span class="avatar-initials">A</span>
-                                    </div>
-                                </td>
-                                <td><%= element.fullname %></td>
-                                <td>
-                                    <button type="button" class="btn btn-success btn-sm btn-call-video" data-call-from-id="<%= userId %>" data-call-to-id="<%= element._id %>">Gọi</button>
-                                    <button id="<%= element.id %>" type="button" class="btn btn-danger btn-sm unfriendBtn">Hủy kết bạn</button>
-                                </td>
+        <div id="middle-panel" class="col-12 col-md-4 full-height" style="padding-right: 0;">
+            <div class="middle-panel-content full-height">
+                <div style="overflow-y: scroll; height: 50%;">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th class="text-center" scope="col" colspan="3">Danh sách bạn bè</th>
                             </tr>
-                        <% }) %>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-        <div id="right-panel" class="col-12 col-md-4" style="background-color: burlywood;">
-            <div class="right-panel-content">
-                <table id="suggest" class="table">
-                    <thead>
-                        <tr>
-                            <th class="text-center" scope="col" colspan="3">Gợi ý kết bạn</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <% list_suggest.forEach(element => { %>
-                            <% if (element.status != 2) { %>
+                        </thead>
+                        <tbody>
+                            <% user.list_friends.forEach(element => { %>
                                 <tr class="align-middle">
                                     <td>
-                                        <div class="avatar-circle">
-                                            <span class="avatar-initials">A</span>
+                                        <!-- <div class="avatar-circle"> -->
+                                            <!-- <span class="avatar-initials"> -->
+                                        <!-- <img class="avatar-circle" src="" alt=""> -->
+                                            <!-- </span> -->
+                                        <!-- </div> -->
+
+                                        <div id="<%= element.id %>" class='c-avatar friends'>
+                                            <img class='c-avatar__image' src='<%=element.photo_url%>' alt=''>
+                                            <!-- <span class='c-avatar__status'></span> -->
                                         </div>
                                     </td>
-                                    <td><%= element.request_to.fullname %> </td>
-                                    <% if (element.status == 0) { %>
-                                        <td><button id="<%=element.request_to.id%>" type="button" class="btn btn-secondary btn-sm requestBtn">Kết bạn</button></td>
-                                    <% } %>
-                                    <% if (element.status == 1) { %>
-                                        <td><button id="<%=element.request_to.id%>" type="button" class="btn btn-danger btn-sm cancel-requestBtn">Hủy lời mời</button></td>
-                                    <% } %>
+                                    <td><%= element.fullname %></td>
+                                    <td id="<%= element._id %>" class="actionBtn">
+                                        <!-- <button
+                                            type="button"
+                                            class="btn btn-success btn-sm btn-call-video"
+                                            data-call-from-id="<%# userId %>"
+                                            data-call-to-id="<%# element._id %>">
+                                            Gọi
+                                        </button> -->
+                                        <button id="<%= element.id %>" type="button" class="btn btn-danger btn-sm unfriendBtn">Hủy kết bạn</button>
+                                    </td>
                                 </tr>
                             <% } %>
-                        <% }) %>
-                    </tbody>
-                </table>
-                <table id="request" class="table">
-                    <thead>
-                        <tr>
-                            <th class="text-center" scope="col" colspan="3">Lời mời kết bạn</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <% if (list_notification) { %>
-                            <% list_notification.request_from.forEach(element => { %>
+                        </tbody>
+                    </table>
+                </div>
+                <div style="overflow-y: scroll; height: 50%;">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th class="text-center" scope="col" colspan="3">Nhật ký cuộc gọi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% callLogs.forEach(callLog => { %>
                                 <tr class="align-middle">
-                                    <td>
-                                        <div class="avatar-circle">
-                                            <span class="avatar-initials">A</span>
-                                        </div>
+                                    <td colspan="2">
+                                        <%= callLog.call_to.fullname %>
                                     </td>
-                                    <td><%= element.user.fullname %> </td>
                                     <td>
-                                        <button id="<%=element.user.id%>" class="btn btn-success btn-sm acceptBtn" type="button">Đồng ý</button>
-                                        <button id="<%=element.user.id%>" type="button" class="btn btn-danger btn-sm declineBtn">Từ chối</button>
+                                        <%= callLog.createdAt %>
                                     </td>
                                 </tr>
-                            <% }) %>    
-                        <% } %>
-                    </tbody>
-                </table>
+                            <% }) %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div id="right-panel" class="col-12 col-md-4 full-height" style="background-color: burlywood; padding-right: 0;">
+            <div class="right-panel-content full-height">
+                <div style="overflow-y: scroll; height: 50%;">
+                    <table id="suggest" class="table">
+                        <thead>
+                            <tr>
+                                <th class="text-center" scope="col" colspan="3">Gợi ý kết bạn</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% list_suggest.forEach(element => { %>
+                                <% if (element.status != 2) { %>
+                                    <tr class="align-middle">
+                                        <td>
+                                            <div class='c-avatar'>
+                                                <img class='c-avatar__image' src='<%=element.request_to.photo_url%>' alt=''>
+                                            </div>
+                                        </td>
+                                        <td><%= element.request_to.fullname %> </td>
+                                        <% if (element.status == 0) { %>
+                                            <td><button id="<%=element.request_to.id%>" type="button" class="btn btn-secondary btn-sm requestBtn">Kết bạn</button></td>
+                                        <% } %>
+                                        <% if (element.status == 1) { %>
+                                            <td><button id="<%=element.request_to.id%>" type="button" class="btn btn-danger btn-sm cancel-requestBtn">Hủy lời mời</button></td>
+                                        <% } %>
+                                    </tr>
+                                <% } %>
+                            <% }) %>
+                        </tbody>
+                    </table>
+                </div>
+                <div style="overflow-y: scroll; height: 50%;">
+                    <table id="request" class="table">
+                        <thead>
+                            <tr>
+                                <th class="text-center" scope="col" colspan="3">Lời mời kết bạn</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% if (list_notification) { %>
+                                <% list_notification.request_from.forEach(element => { %>
+                                    <tr class="align-middle">
+                                        <td>
+                                            <div class='c-avatar'>
+                                                <img class='c-avatar__image' src='<%=element.user.photo_url%>' alt=''>
+                                            </div>
+                                        </td>
+                                        <td><%= element.user.fullname %> </td>
+                                        <td>
+                                            <button id="<%=element.user.id%>" class="btn btn-success btn-sm acceptBtn" type="button">Đồng ý</button>
+                                            <button id="<%=element.user.id%>" type="button" class="btn btn-danger btn-sm declineBtn">Từ chối</button>
+                                        </td>
+                                    </tr>
+                                <% }) %>
+                            <% } %>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>

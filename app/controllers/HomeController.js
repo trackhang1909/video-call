@@ -2,6 +2,7 @@ const { verify } = require("jsonwebtoken");
 const Notification = require("../models/Notification");
 const Suggest = require("../models/Suggest");
 const User = require("../models/User");
+const CallLog = require("../models/CallLog");
 
 let title
 
@@ -44,6 +45,12 @@ class HomeController {
 
             let payload = verify(token, 'secret')
             let userId = payload.id
+            global.userId = userId
+
+            let callLogs = await CallLog.find({ call_from: userId }).populate('call_to').lean();
+            for await (let e of callLogs) {
+                e.createdAt = e.createdAt.getDate() + '/' + (e.createdAt.getMonth() + 1) + '/' + e.createdAt.getFullYear() + ' - ' + e.createdAt.getHours() + ':' + e.createdAt.getMinutes();
+            }
 
             let user = await User.findById(userId).populate('list_friends')
 
@@ -80,7 +87,7 @@ class HomeController {
 
             let list_notification = await Notification.findOne({ id_user: user }).populate('request_from.user')
 
-            // get list friends request 
+            // get list friends request
             if (list_notification) {
                 for await (let element of list_notification.request_from) {
                     let toUser = await User.findById(element.user.id)
@@ -94,7 +101,7 @@ class HomeController {
 
             title = user.fullname
 
-            return res.render('account-detail', { title, isLogged, user, list_suggest, list_notification, userId });
+            return res.render('account-detail', { title, isLogged, user, list_suggest, list_notification, userId, callLogs });
         }
         return res.render('account-detail', { isLogged });
     }

@@ -5,10 +5,13 @@ $(document).ready(function () {
 
     // Answer call
     socket.on('answer-call', data => {
-        $('#answerModal .modal-body span').text('Bạn nhận được cuộc gọi từ ' + data.userCallFromName);
+        $('#answerModal .modal-body span').text('Bạn nhận được cuộc gọi từ ' + data.userCallFrom.fullname);
         $('#answerModal .modal-footer .btn-success').on('click', () => {
             window.location = '/call?id=' + data.peerId;
-        })
+        });
+        $('#answerModal .modal-footer .btn-danger').on('click', () => {
+            socket.emit('reject-call', data);
+        });
         $('#answerModal').modal('show');
     });
 
@@ -31,7 +34,7 @@ $(document).ready(function () {
         }
     });
 
-    //Document Click hiding the popup 
+    //Document Click hiding the popup
     $(document).on('click', function (e) {
         if ((e.target.id == "notificationsBody") == false
             && (e.target.id == "notificationTitle") == false
@@ -56,15 +59,37 @@ $(document).ready(function () {
         let userId = $('.fromUser').attr('id');
         let toId = $(this).attr('id');
 
+        // Show loading screen
+        $("#loading").show();
+
         $.ajax({
             type: "post",
             url: "user/accept/" + toId,
             data: { userId },
             success: function (response) {
+                // Hide loading screen
+                setTimeout(function () {
+                    $("#loading").hide();
+                }, 700);
+
                 $('#right-panel').load('/account-detail .right-panel-content')
-                $('#middle-panel').load('/account-detail .middle-panel-content')
+                $('#middle-panel').load(
+                    // url
+                    '/account-detail .middle-panel-content',
+                    // callback
+                    () => {
+                        friendsIdArr = [];
+
+                        $('.friends').each(function (i, e) {
+                            friendsIdArr.push(e.id);
+                        });
+
+                        console.log(friendsIdArr);
+                    }
+                )
                 $('.navbar').load('/ #nav-content')
                 socket.emit("Client-sent-data", toId);
+                // socket.emit("new user", userId);
             }
         });
     });
@@ -73,15 +98,38 @@ $(document).ready(function () {
         let userId = $('.fromUser').attr('id');
         let toId = $(this).attr('id');
 
+        // Show loading screen
+        $("#loading").show();
+
         $.ajax({
             type: "post",
             url: "user/decline/" + toId,
             data: { userId },
             success: function (response) {
+
+                // Hide loading screen
+                setTimeout(function () {
+                    $("#loading").hide();
+                }, 700);
+
                 $('#right-panel').load('/account-detail .right-panel-content')
-                $('#middle-panel').load('/account-detail .middle-panel-content')
+                $('#middle-panel').load(
+                    // url
+                    '/account-detail .middle-panel-content',
+                    // callback
+                    () => {
+                        friendsIdArr = [];
+
+                        $('.friends').each(function (i, e) {
+                            friendsIdArr.push(e.id);
+                        });
+
+                        console.log(friendsIdArr);
+                    }
+                )
                 $('.navbar').load('/ #nav-content')
                 socket.emit("Client-sent-data", toId);
+                socket.emit("new user", userId);
             }
         });
     });
@@ -90,15 +138,25 @@ $(document).ready(function () {
         let userId = $('.fromUser').attr('id');
         let toId = $(this).attr('id');
 
+        // Show loading screen
+        $("#loading").show();
+
         $.ajax({
             type: "post",
             url: "user/unfriend/" + toId,
             data: { userId },
             success: function (response) {
+
+                // Hide loading screen
+                setTimeout(function () {
+                    $("#loading").hide();
+                }, 700);
+
                 $('#right-panel').load('/account-detail .right-panel-content')
                 $('#middle-panel').load('/account-detail .middle-panel-content')
                 $('.navbar').load('/ #nav-content')
                 socket.emit("Client-sent-data", toId);
+                socket.emit("new user", userId);
             }
         });
     });
@@ -123,21 +181,23 @@ if (window.location.pathname === '/') {
 }
 
 if (window.location.pathname === '/account-detail') {
-    //Add event listener - click call
-    let btnCalls = document.getElementsByClassName("btn-call-video");
-
-    let clickCall = (event) => {
-        const callFromId = event.target.dataset.callFromId;
-        const callToId = event.target.dataset.callToId;
+    function clickCall (event) {
+        const callFromId = event.dataset.callFromId;
+        const callToId = event.dataset.callToId;
         window.location = '/call?callFromId=' + callFromId + '&callToId=' + callToId;
-    };
-
-    Array.from(btnCalls).forEach((element) => {
-        element.addEventListener('click', clickCall);
-    });
+    }
 }
 
 if (window.location.pathname === '/call') {
+
+    // Reject call
+    socket.on('reject-call-from', data => {
+        $('#rejectModal .modal-body span').text(data.fullname + ' đã từ chối cuộc gọi của bạn');
+        $('#rejectModal .modal-footer .btn-success').on('click', () => {
+            window.location = '/';
+        });
+        $('#rejectModal').modal('show');
+    });
 
     const peer = new Peer();
     let streamCall;
@@ -194,6 +254,8 @@ if (window.location.pathname === '/call') {
                     callToId,
                     peerId
                 }
+
+                $('#friend-name').text('Khang Hello');
                 socket.emit('call-video', data);
             }
         });
@@ -208,9 +270,24 @@ if (window.location.pathname === '/call') {
     });
 
     $(function() {
-        $('.fa-minus').click(function() {    
+        $('.fa-minus').click(function() {
             $(this).closest('.chatbox').toggleClass('chatbox-min');
         });
     });
+
+    // Send message
+    $('#send').on('click', () => {
+        let message = $('#message');
+        $('#chat-box').append(`
+            <div class="message-box-holder">
+                <div class="message-box">
+                    ${ message.val() }
+                </div>
+            </div>
+        `);
+        socket.emit('send-message', message.val());
+        message.val('');
+    });
+
 
 }
