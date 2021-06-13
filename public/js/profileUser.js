@@ -60,14 +60,50 @@ $(document).ready(function () {
         })
     })
 
-    $(".file-upload").on('change', function () {
-        readURL(this);
+    var readURL = function (input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+
+            reader.onload = function (e) {
+                $('.profile-pic').attr('src', e.target.result);
+            }
+
+            reader.readAsDataURL(input.files[0]);
+        }
+        console.log(input.files[0]);
+    }
+
+    $(".file-upload").on('change', function (e) {
+        $('#upload-avatar-form').submit()
+    })
+
+    $('#upload-avatar-form').submit(function () {
+        let userId = $('.fromUser').attr('id');
+
+        // Show loading screen
+        $("#loading").show();
+        $(this).ajaxSubmit({
+            data: { userId },
+
+            success: function (response) {
+                if (response.message == 'success') {
+                    // Hide loading screen
+                    setTimeout(function () {
+                        $("#loading").hide();
+                    }, 700);
+
+                    $('#left-panel').load('/account-detail .left-panel-content')
+                    $('.navbar').load('/ #nav-content')
+                }
+            }
+        });
+
+        return false;
     });
 
     $(".upload-button").on('click', function () {
         $(".file-upload").click();
     });
-
 
     // if ($('.student-page').length != 0) {
     //     socket.on("Server-sent-data", function (data) {
