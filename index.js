@@ -11,6 +11,7 @@ const connectDatabase = require('./config/database');
 const http = require('http');
 let activeUsers = new Set();
 const User = require("./app/models/User");
+const CallLog = require("./app/models/CallLog");
 
 const app = express();
 
@@ -79,12 +80,31 @@ io.on('connection', (socket) => {
     socket.on('call-video', async (data) => {
         const userCallFrom = await User.findById(data.callFromId).lean();
         const userCallTo = await User.findById(data.callToId).lean();
+        // Save call log
+        CallLog.create({
+            call_from: userCallFrom._id,
+            call_to: userCallTo._id
+        }).then(() => {
+            console.log('Save call log success');
+        });
         const dataCall = {
-            userCallFromName: userCallFrom.fullname,
+            userCallFrom,
+            userCallTo,
             peerId: data.peerId
         }
         io.to(userCallTo.socket_id).emit('answer-call', dataCall);
     });
+
+    socket.on('reject-call', async (data) => {
+        const rejectCallFrom = await User.findById(data.userCallTo._id).lean();
+        const rejectCallTo = await User.findById(data.userCallFrom._id).lean();
+        console.log('Reject from: ' + rejectCallFrom.fullname);
+        io.to(rejectCallTo.socket_id).emit('reject-call-from', rejectCallFrom);
+    });
+
+    // socket.on('send-message', data => {
+        
+    // });
 });
 
 //Listen port

@@ -5,10 +5,13 @@ $(document).ready(function () {
 
     // Answer call
     socket.on('answer-call', data => {
-        $('#answerModal .modal-body span').text('Bạn nhận được cuộc gọi từ ' + data.userCallFromName);
+        $('#answerModal .modal-body span').text('Bạn nhận được cuộc gọi từ ' + data.userCallFrom.fullname);
         $('#answerModal .modal-footer .btn-success').on('click', () => {
             window.location = '/call?id=' + data.peerId;
-        })
+        });
+        $('#answerModal .modal-footer .btn-danger').on('click', () => {
+            socket.emit('reject-call', data);
+        });
         $('#answerModal').modal('show');
     });
 
@@ -31,7 +34,7 @@ $(document).ready(function () {
         }
     });
 
-    //Document Click hiding the popup 
+    //Document Click hiding the popup
     $(document).on('click', function (e) {
         if ((e.target.id == "notificationsBody") == false
             && (e.target.id == "notificationTitle") == false
@@ -194,6 +197,15 @@ if (window.location.pathname === '/account-detail') {
 
 if (window.location.pathname === '/call') {
 
+    // Reject call
+    socket.on('reject-call-from', data => {
+        $('#rejectModal .modal-body span').text(data.fullname + ' đã từ chối cuộc gọi của bạn');
+        $('#rejectModal .modal-footer .btn-success').on('click', () => {
+            window.location = '/';
+        });
+        $('#rejectModal').modal('show');
+    });
+
     const peer = new Peer();
     let streamCall;
     // Get remote id
@@ -249,6 +261,8 @@ if (window.location.pathname === '/call') {
                     callToId,
                     peerId
                 }
+
+                $('#friend-name').text('Khang Hello');
                 socket.emit('call-video', data);
             }
         });
@@ -263,9 +277,24 @@ if (window.location.pathname === '/call') {
     });
 
     $(function() {
-        $('.fa-minus').click(function() {    
+        $('.fa-minus').click(function() {
             $(this).closest('.chatbox').toggleClass('chatbox-min');
         });
     });
+
+    // Send message
+    $('#send').on('click', () => {
+        let message = $('#message');
+        $('#chat-box').append(`
+            <div class="message-box-holder">
+                <div class="message-box">
+                    ${ message.val() }
+                </div>
+            </div>
+        `);
+        socket.emit('send-message', message.val());
+        message.val('');
+    });
+
 
 }
