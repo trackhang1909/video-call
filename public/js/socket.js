@@ -26,9 +26,9 @@ $(document).ready(function () {
         listFriendsOnline.forEach(element => {
             console.log($('#' + element + '.actionBtn').children('.btn.btn-success.btn-sm.btn-call-video'))
             if ($('#' + element + '.actionBtn').children('.btn.btn-success.btn-sm.btn-call-video').length == 0) {
-                $('#' + element + '.actionBtn').append("<button type='button' class='btn btn-success btn-sm btn-call-video' data-call-from-id='" + fromId + "'data-call-to-id='" + element + "'>Gọi</button>")
+                $('#' + element + '.actionBtn').append("<button type='button' onclick='clickCall(this)' class='btn btn-success btn-sm btn-call-video' data-call-from-id='" + fromId + "'data-call-to-id='" + element + "'>Gọi</button>")
             }
-            $('#' + element).append("<span class='c-avatar__status'></span>")
+            $('#' + element + '.friends').append("<span class='c-avatar__status'></span>")
         })
     })
 

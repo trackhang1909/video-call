@@ -181,18 +181,11 @@ if (window.location.pathname === '/') {
 }
 
 if (window.location.pathname === '/account-detail') {
-    //Add event listener - click call
-    let btnCalls = document.getElementsByClassName("btn-call-video");
-
-    let clickCall = (event) => {
-        const callFromId = event.target.dataset.callFromId;
-        const callToId = event.target.dataset.callToId;
+    function clickCall (event) {
+        const callFromId = event.dataset.callFromId;
+        const callToId = event.dataset.callToId;
         window.location = '/call?callFromId=' + callFromId + '&callToId=' + callToId;
-    };
-
-    Array.from(btnCalls).forEach((element) => {
-        element.addEventListener('click', clickCall);
-    });
+    }
 }
 
 if (window.location.pathname === '/call') {
