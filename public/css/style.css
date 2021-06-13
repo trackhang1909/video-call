@@ -34,6 +34,10 @@
     display: block;
 }
 
+.w-48 {
+    width: 48% !important;
+}
+
 .w-50 {
     width: 50% !important;
 }
@@ -176,6 +180,10 @@ body {
 
 .full-height {
     height: 100%;
+}
+
+.full-width {
+    width: 100%;
 }
 
 .middle {
@@ -366,7 +374,7 @@ body {
 
 .chat-partner-name, .chat-group-name {
     flex: 1;
-    padding: 0 0 0 60px;
+    padding: 0 0 0 15px;
     font-size: 15px;
     font-weight: bold;
     color: #30649c;
@@ -547,7 +555,7 @@ body {
 }
 
 .chatbox-min .chat-partner-name, .chatbox-min .chat-group-name {
-    padding: 0 0 0 75px;
+    padding: 0 0 0 15px;
 }
 
 .settings-popup {

@@ -6,7 +6,7 @@
         <% } %>
     <% }) %>
 <% } %>
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
+<nav class="navbar navbar-expand-lg navbar-light bg-light" style="min-height: 7%">
     <div class="container-fluid" id="nav-content">
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -27,7 +27,6 @@
                                         far fa-bell fa-lg
                                     <% } %>">
                                     <!-- class bell -->
-                                
                             <!-- if new notification -->
                             <% if (count>0) { %>
                                 <span id="notification_count"><%=count%></span>
@@ -66,8 +65,7 @@
                                                         <button id="<%=element.user.id%>" type="button" class="btn btn-danger btn-sm declineBtn">Từ chối</button>
                                                     </td>
                                                 </tr>
-                                            <% } %> 
-                                            
+                                            <% } %>
                                         <% }) %>
                                     <% } %>
                                     </tbody>
