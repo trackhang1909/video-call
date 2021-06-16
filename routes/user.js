@@ -13,7 +13,16 @@ router.post('/decline/:toId?', authMiddleware.isLogged, UserController.declineRe
 router.post('/unfriend/:toId?', authMiddleware.isLogged, UserController.unfriend)
 router.post(
     '/upload',
-    upload,
+    function (req, res, next) {
+        upload(req, res, function (err) {
+            if (err instanceof multer.MulterError) {
+                let msg = 'Đã có lỗi xảy ra, vui lòng thử lại'
+                req.flash('error_upload', msg)
+                next()
+            }
+            next()
+        })
+    },
     UserController.uploadAvatar
 )
 

@@ -84,7 +84,6 @@ $(document).ready(function () {
                             friendsIdArr.push(e.id);
                         });
 
-                        console.log(friendsIdArr);
                     }
                 )
                 $('.navbar').load('/ #nav-content')
@@ -124,7 +123,6 @@ $(document).ready(function () {
                             friendsIdArr.push(e.id);
                         });
 
-                        console.log(friendsIdArr);
                     }
                 )
                 $('.navbar').load('/ #nav-content')
@@ -181,7 +179,7 @@ if (window.location.pathname === '/') {
 }
 
 if (window.location.pathname === '/account-detail') {
-    function clickCall (event) {
+    function clickCall(event) {
         const callFromId = event.dataset.callFromId;
         const callToId = event.dataset.callToId;
         window.location = '/call?callFromId=' + callFromId + '&callToId=' + callToId;
@@ -269,8 +267,8 @@ if (window.location.pathname === '/call') {
         });
     });
 
-    $(function() {
-        $('.fa-minus').click(function() {
+    $(function () {
+        $('.fa-minus').click(function () {
             $(this).closest('.chatbox').toggleClass('chatbox-min');
         });
     });
@@ -281,7 +279,7 @@ if (window.location.pathname === '/call') {
         $('#chat-box').append(`
             <div class="message-box-holder">
                 <div class="message-box">
-                    ${ message.val() }
+                    ${message.val()}
                 </div>
             </div>
         `);
