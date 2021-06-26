@@ -75,6 +75,30 @@ class authMiddleware {
         req.flash('isLogged', false)
         return res.redirect('/')
     }
+
+    // Change password
+    changePassword = [
+        check('password')
+            .exists({ checkFalsy: true })
+            .withMessage("Vui lòng nhập mật khẩu")
+            .notEmpty()
+            .withMessage("Mật khẩu không được để trống"),
+
+        check("confirm_password")
+            .exists({ checkFalsy: true, checkNull: true })
+            .withMessage("Vui lòng nhập mật khẩu xác nhận")
+            .notEmpty()
+            .withMessage("Vui lòng nhập mật khẩu xác nhận")
+            .custom((value, { req }) => {
+                if (value == "") {
+                    req.body.password = null;
+                }
+                if (value !== req.body.password) {
+                    throw new Error("Mật khẩu không khớp");
+                }
+                return true;
+            }),
+    ]
 }
 
 module.exports = new authMiddleware();

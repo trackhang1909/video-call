@@ -110,7 +110,6 @@ class AuthController {
 
         let remember = req.body.rememberPassword
 
-        console.log(result);
         // if validation success
         if (result.errors.length === 0) {
 

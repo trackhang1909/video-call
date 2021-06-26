@@ -160,16 +160,24 @@ class UserController {
 
     uploadAvatar = async (req, res, next) => {
         let userId = req.body.userId
-        let photo_url = '/' + req.file.destination.slice(7) + req.file.filename
+        let error = req.flash('error_upload') || ''
+        if (error.length > 0 || !req.file) {
+            return res.json({
+                text: error,
+                message: 'fail'
+            })
+        } else {
+            let photo_url = '/' + req.file.destination.slice(7) + req.file.filename
 
-        await User.findByIdAndUpdate(
-            userId,
-            { photo_url: photo_url },
-        )
+            await User.findByIdAndUpdate(
+                userId,
+                { photo_url: photo_url },
+            )
 
-        return res.json({
-            message: 'success'
-        })
+            return res.json({
+                message: 'success'
+            })
+        }
     }
 }
 

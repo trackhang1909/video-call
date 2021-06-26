@@ -73,11 +73,11 @@ $(document).ready(function () {
         console.log(input.files[0]);
     }
 
-    $(".file-upload").on('change', function (e) {
+    $('body').on('change', ".file-upload", function (e) {
         $('#upload-avatar-form').submit()
     })
 
-    $('#upload-avatar-form').submit(function () {
+    $('body').on('submit', '#upload-avatar-form', function () {
         let userId = $('.fromUser').attr('id');
 
         // Show loading screen
@@ -94,6 +94,32 @@ $(document).ready(function () {
 
                     $('#left-panel').load('/account-detail .left-panel-content')
                     $('.navbar').load('/ #nav-content')
+
+                    $.notify(
+                        "Cập nhật ảnh thành công!", {
+                        className: 'success',
+                        position: 'bottom center',
+                        autoHide: true,
+                        autoHideDelay: 2000,
+                        hideAnimation: 'slideUp',
+                        hideDuration: 300,
+                    });
+                } else {
+                    // Hide loading screen
+                    setTimeout(function () {
+                        $("#loading").hide();
+                    }, 700);
+
+                    $.notify(
+                        'Đã có lỗi xảy ra, vui lòng thử lại!', {
+                        className: 'error',
+                        position: 'bottom center',
+                        autoHide: true,
+                        autoHideDelay: 2000,
+                        hideAnimation: 'slideUp',
+                        hideDuration: 300,
+                    });
+
                 }
             }
         });
@@ -101,9 +127,9 @@ $(document).ready(function () {
         return false;
     });
 
-    $(".upload-button").on('click', function () {
-        $(".file-upload").click();
-    });
+    $('body').on('click', '.upload-button', function () {
+        $(".file-upload").click()
+    })
 
     // if ($('.student-page').length != 0) {
     //     socket.on("Server-sent-data", function (data) {
