@@ -16,7 +16,7 @@ class AuthController {
         res.render('auth/register', { error, success, username, email, fullname })
     }
 
-    // [POST] auth/register  
+    // [POST] auth/register
     postRegister(req, res, next) {
         // get result of validation
         let result = validationResult(req)
@@ -91,16 +91,15 @@ class AuthController {
         }
     }
 
-    // [GET] auth/login  
+    // [GET] auth/login
     getLogin(req, res, next) {
         let error = req.flash('error') || ''
         let username = req.flash('username') || ''
 
         return res.render('auth/login', { error, username });
-
     }
 
-    // [POST] auth/login  
+    // [POST] auth/login
     postLogin(req, res, next) {
         // get result of validation
         let result = validationResult(req)
@@ -123,7 +122,7 @@ class AuthController {
                         bcrypt.compare(password, user.password, function (error, result) {
                             // if it has error return message error
                             if (error) {
-                                // flash data 
+                                // flash data
                                 let msg = error
                                 req.flash("error", msg)
                                 req.flash('username', username)
@@ -134,8 +133,8 @@ class AuthController {
                             // -> generate user token
                             // -> redirect index page
                             if (result) {
-                                //Add global variable
-                                global.userId = user._id
+                                // Add global user id
+                                global.userId =  user._id;
                                 if (remember == 'on') {
                                     // generate user token
                                     let token = jwt.sign({ id: user._id, username: user.username }, 'secret', { expiresIn: '10y' })
@@ -204,8 +203,8 @@ class AuthController {
 
     // Facebook Authorize
     facebookAuth(req, res, next) {
-        //Add global variable
-        global.userId = req.user._id
+        // Add global user id
+        global.userId = req.user._id;
 
         // create token
         let token = jwt.sign({ id: req.user._id }, 'secret', { expiresIn: '1d' })
@@ -222,8 +221,8 @@ class AuthController {
 
     // Google Authorize
     googleAuth(req, res, next) {
-        //Add global variable
-        global.userId = req.user._id
+        // Add global user id
+        global.userId = req.user._id;
 
         // create token
         let token = jwt.sign({ id: req.user._id }, 'secret', { expiresIn: '1d' })

@@ -33,8 +33,10 @@ class HomeController {
         return res.render('index', { title, isLogged });
     }
     // [GET] /call
-    call(req, res) {
-        res.render('call', { title });
+    async call(req, res) {
+        const user = req.query.callToId ? await User.findById(req.query.callToId).lean() : await User.findById(req.query.callFromId).lean();
+        const fullname = user ? user.fullname : 'User' ;
+        res.render('call', { title, fullname });
     }
     // [GET] /account-detail
     accountDetail = async (req, res) => {
