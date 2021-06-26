@@ -1,19 +1,19 @@
 let socket = io();
 
+// Answer call
+socket.on('answer-call', data => {
+    $('#answerModal .modal-body span').text('Bạn nhận được cuộc gọi từ ' + data.userCallFrom.fullname);
+    $('#answerModal .modal-footer .btn-success').on('click', () => {
+        window.location = '/call?id=' + data.peerId + '&callFromId=' + data.userCallFrom._id;
+    });
+    $('#answerModal .modal-footer .btn-danger').on('click', () => {
+        socket.emit('reject-call', data);
+    });
+    $('#answerModal').modal('show');
+});
+
 $(document).ready(function () {
     $('#loading').hide();
-
-    // Answer call
-    socket.on('answer-call', data => {
-        $('#answerModal .modal-body span').text('Bạn nhận được cuộc gọi từ ' + data.userCallFrom.fullname);
-        $('#answerModal .modal-footer .btn-success').on('click', () => {
-            window.location = '/call?id=' + data.peerId;
-        });
-        $('#answerModal .modal-footer .btn-danger').on('click', () => {
-            socket.emit('reject-call', data);
-        });
-        $('#answerModal').modal('show');
-    });
 
     $('body').on('click', '#notificationLink', function (e) {
         if ($('#notificationContainer').css('display') == 'none') {
@@ -221,10 +221,28 @@ if (window.location.pathname === '/call') {
         video.play();
     }
 
+    function copyText(event) {
+        const el = document.createElement('textarea');
+        el.value = event.dataset.id;
+        el.setAttribute('readonly', '');
+        el.style.position = 'absolute';
+        el.style.left = '-9999px';
+        document.body.appendChild(el);
+        el.select();
+        document.execCommand('copy');
+        document.body.removeChild(el);
+        alert('Sao chép mã cuộc gọi thành công');
+    }
+
     //Show peer id
     peer.on('open', id => {
         let myPeerId = document.getElementById('my-peer-id');
-        myPeerId.innerHTML = 'Mã cuộc gọi: ' + id;
+        myPeerId.innerHTML = `
+            Mã cuộc gọi: ${id}
+            <button type="button" class="btn btn-sm btn-secondary" data-id="${id}" onclick="copyText(this)">
+                <i class="fa fa-files-o" aria-hidden="true"></i>
+            </button>
+        `;
         peerId = id;
         //Call
         openStream().then(stream => {
@@ -254,8 +272,6 @@ if (window.location.pathname === '/call') {
                     callToId,
                     peerId
                 }
-
-                $('#friend-name').text('Khang Hello');
                 socket.emit('call-video', data);
             }
         });
@@ -273,20 +289,6 @@ if (window.location.pathname === '/call') {
         $('.fa-minus').click(function() {
             $(this).closest('.chatbox').toggleClass('chatbox-min');
         });
-    });
-
-    // Send message
-    $('#send').on('click', () => {
-        let message = $('#message');
-        $('#chat-box').append(`
-            <div class="message-box-holder">
-                <div class="message-box">
-                    ${ message.val() }
-                </div>
-            </div>
-        `);
-        socket.emit('send-message', message.val());
-        message.val('');
     });
 
 

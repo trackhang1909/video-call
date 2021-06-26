@@ -47,7 +47,8 @@ const io = require('socket.io')(server);
 
 io.on('connection', (socket) => {
 
-    console.log('connected')
+    console.log('connected: ' + socket.id)
+
     socket.on("new user", (data) => {
         socket.id = data
         activeUsers.add(data);
@@ -68,8 +69,9 @@ io.on('connection', (socket) => {
     });
 
     //Save socket id in users table
-    if (global.userId) {
-        User.findByIdAndUpdate(global.userId, { socket_id: socket.id })
+    const userId = global.userId;
+    if (userId) {
+        User.findByIdAndUpdate(userId, { socket_id: socket.id })
             .then(() => {
                 console.log('Save socket id success')
             })
@@ -80,6 +82,7 @@ io.on('connection', (socket) => {
     socket.on('call-video', async (data) => {
         const userCallFrom = await User.findById(data.callFromId).lean();
         const userCallTo = await User.findById(data.callToId).lean();
+        console.log('call-video-to: ' + userCallTo.fullname);
         // Save call log
         CallLog.create({
             call_from: userCallFrom._id,
@@ -102,9 +105,6 @@ io.on('connection', (socket) => {
         io.to(rejectCallTo.socket_id).emit('reject-call-from', rejectCallFrom);
     });
 
-    // socket.on('send-message', data => {
-        
-    // });
 });
 
 //Listen port

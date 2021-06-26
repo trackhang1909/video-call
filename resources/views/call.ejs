@@ -43,7 +43,9 @@
                             Chi tiết
                         </button>
                         <ul class="dropdown-menu">
-                            <li><span id="my-peer-id" class="dropdown-item"></span></li>
+                            <li>
+                                <span id="my-peer-id" style="white-space: nowrap; margin: 10px;"></span>
+                            </li>
                         </ul>
                     </div>
                 </div>
@@ -62,7 +64,7 @@
                     </div> -->
                     <div class="chat-partner-name">
                         <span class="status online"></span>
-                        <span id="friend-name"></span>
+                        <span id="friend-name"><%= fullname %></span>
                     </div>
                     <div class="chatbox-icons">
                         <a href="javascript:void(0);"><i class="fa fa-minus"></i></a>
@@ -77,9 +79,6 @@
                     </div>
 
                     <div class="message-box-holder">
-                        <div class="message-sender">
-                            Mamun Khandaker
-                        </div>
                         <div class="message-box message-partner">
                             Hi.
                         </div>
@@ -88,7 +87,7 @@
 
                 <div class="chat-input-holder">
                     <textarea class="chat-input" id="message"></textarea>
-                    <button id="send" type="button" class="message-send">Gửi</button>/>
+                    <button id="send" type="button" class="message-send">Gửi</button>
                 </div>
                 <div class="attachment-panel">
                     <a href="#" class="fa fa-thumbs-up"></a>
