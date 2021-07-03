@@ -187,7 +187,6 @@ if (window.location.pathname === '/account-detail') {
 }
 
 if (window.location.pathname === '/call') {
-
     // Reject call
     socket.on('reject-call-from', data => {
         $('#rejectModal .modal-body span').text(data.fullname + ' đã từ chối cuộc gọi của bạn');
@@ -287,6 +286,11 @@ if (window.location.pathname === '/call') {
         $('.fa-minus').click(function () {
             $(this).closest('.chatbox').toggleClass('chatbox-min');
         });
+    });
+
+    window.addEventListener('beforeunload', function (e) {
+        e.preventDefault();
+        e.returnValue = '';
     });
 
 }
