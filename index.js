@@ -46,8 +46,17 @@ const server = http.createServer(app);
 const io = require('socket.io')(server);
 
 io.on('connection', (socket) => {
-
-    console.log('connected: ' + socket.id)
+    console.log('Connected: ' + socket.id)
+    //Save socket id in users table
+    const userId = global.userId;
+    console.log('Global user id: ' + userId);
+    if (userId) {
+        User.findByIdAndUpdate(userId, { socket_id: socket.id })
+            .then(() => {
+                console.log('Save socket id success')
+            })
+            .catch(error => console.log(error))
+    }
 
     socket.on("new user", (data) => {
         socket.id = data
@@ -67,16 +76,6 @@ io.on('connection', (socket) => {
     socket.on("Client-sent-data", (data) => {
         socket.broadcast.emit("Server-sent-data", data);
     });
-
-    //Save socket id in users table
-    const userId = global.userId;
-    if (userId) {
-        User.findByIdAndUpdate(userId, { socket_id: socket.id })
-            .then(() => {
-                console.log('Save socket id success')
-            })
-            .catch(error => console.log(error))
-    }
 
     // Send private event to client
     socket.on('call-video', async (data) => {
@@ -104,7 +103,6 @@ io.on('connection', (socket) => {
         console.log('Reject from: ' + rejectCallFrom.fullname);
         io.to(rejectCallTo.socket_id).emit('reject-call-from', rejectCallFrom);
     });
-
 });
 
 //Listen port

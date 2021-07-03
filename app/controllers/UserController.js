@@ -37,7 +37,7 @@ class UserController {
                 )
             }
         } else {
-            // if notification not exist 
+            // if notification not exist
             let dataNotification = {
                 id_user: toId,
                 request_from: [{ user: fromUser, status: 'new' }],
