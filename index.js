@@ -47,16 +47,6 @@ const io = require('socket.io')(server);
 
 io.on('connection', (socket) => {
     console.log('Connected: ' + socket.id)
-    //Save socket id in users table
-    const userId = global.userId;
-    console.log('Global user id: ' + userId);
-    if (userId) {
-        User.findByIdAndUpdate(userId, { socket_id: socket.id })
-            .then(() => {
-                console.log('Save socket id success')
-            })
-            .catch(error => console.log(error))
-    }
 
     socket.on("new user", (data) => {
         socket.id = data
@@ -81,7 +71,6 @@ io.on('connection', (socket) => {
     socket.on('call-video', async (data) => {
         const userCallFrom = await User.findById(data.callFromId).lean();
         const userCallTo = await User.findById(data.callToId).lean();
-        console.log('call-video-to: ' + userCallTo.fullname);
         // Save call log
         CallLog.create({
             call_from: userCallFrom._id,
@@ -100,8 +89,23 @@ io.on('connection', (socket) => {
     socket.on('reject-call', async (data) => {
         const rejectCallFrom = await User.findById(data.userCallTo._id).lean();
         const rejectCallTo = await User.findById(data.userCallFrom._id).lean();
-        console.log('Reject from: ' + rejectCallFrom.fullname);
         io.to(rejectCallTo.socket_id).emit('reject-call-from', rejectCallFrom);
+    });
+
+    socket.on('send-socket-id', (data) => {
+        const newData = {
+            socketId: data.socketId,
+            person: data.person
+        }
+        io.to(data.socketTo).emit('receive-socket-id', newData);
+    });
+
+    socket.on('send-message', (data) => {
+        io.to(data.socketId).emit('receive-message', data.message);
+    });
+
+    socket.on('friend-disconnect-send', (data) => {
+        io.to(data).emit('friend-disconnect-receive');
     });
 });
 

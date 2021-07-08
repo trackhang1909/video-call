@@ -7,6 +7,8 @@ const authMiddleware = require('../app/middlewares/authMiddleware')
 router.get('/', HomeController.index);
 // [GET] /call
 router.get('/call', HomeController.call);
+// [POST] /save-socket
+router.post('/save-socket', HomeController.saveSocket);
 // [GET] /account-detail
 router.get('/account-detail', authMiddleware.isLogged, HomeController.accountDetail);
 // [GET] /change-password

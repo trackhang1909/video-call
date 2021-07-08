@@ -35,8 +35,37 @@ class HomeController {
     // [GET] /call
     async call(req, res) {
         const user = req.query.callToId ? await User.findById(req.query.callToId).lean() : await User.findById(req.query.callFromId).lean();
-        const fullname = user ? user.fullname : 'User' ;
+        const fullname = user ? user.fullname : '';
         res.render('call', { title, fullname });
+    }
+    // [GET] /save-socket
+    saveSocket(req, res) {
+        const token = req.cookies.token
+        if (token) {
+            let payload = verify(token, 'secret')
+            let userId = payload.id
+            if (userId) {
+                //Save socket id in users table
+                User.findByIdAndUpdate(userId, { socket_id: req.body.socketId })
+                .then(() => {
+                    return res.json({
+                        'logged': true,
+                        'msg': 'Save socket id success'
+                    });
+                })
+                .catch(error => {
+                    return res.json({
+                        'logged': false,
+                        'msg': error
+                    });
+                })
+            }
+        } else {
+            return res.json({
+                'logged': false,
+                'msg': 'Invalid user'
+            });
+        }
     }
     // [GET] /account-detail
     accountDetail = async (req, res) => {

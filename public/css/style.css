@@ -220,7 +220,17 @@ body {
     height: 10%;
 }
 
+#call-view {
+    height: 93%;
+    position: fixed;
+}
+
 @media only screen and (max-width: 992px) {
+    #call-view {
+        height: 93%;
+        position: relative;
+    }
+
     #local-stream {
         width: 40%;
         height: 30%;
@@ -235,6 +245,25 @@ body {
         width: 100%;
         height: 100%;
     }
+
+    #change-view {
+        display: none;
+    }
+}
+
+.local-stream-cls-2 {
+    width: 40%;
+    height: 30%;
+    position: absolute;
+    border: 3px solid slateblue;
+    border-radius: 10px;
+    margin-top: 10px;
+    margin-left: 10px;
+}
+
+.remote-stream-cls-2 {
+    width: 100%;
+    height: 100%;
 }
 
 .new-notification {
@@ -252,9 +281,13 @@ body {
     margin-left: 20px;
 }
 
-/* #my-peer-id {
-    margin-left: 25px;
-} */
+.cut-text {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    width: 100px;
+    white-space: nowrap;
+    margin-left: 10px;
+}
 
 .c-avatar {
     position:relative;
@@ -546,7 +579,7 @@ body {
 
 .chatbox-min {
     margin-bottom: -362px;
-    /*   height: 46px; */
+    background-color: rgba(167, 167, 167, 0.103);
 }
 
 .chatbox-min .chatbox-avatar {

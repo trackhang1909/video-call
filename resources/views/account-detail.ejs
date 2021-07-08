@@ -2,11 +2,11 @@
 <link rel="stylesheet" href="../css/avatarStyle.css">
 <script src="../js/profileUser.js"></script>
 
-<div class="container-fluid" style="height: 93%; position: fixed;">
+<div class="container-fluid" id="call-view">
     <div class="row full-height">
-        <div id="left-panel" class="col-12 col-md-4" style="background-color: aqua;">
+        <div id="left-panel" class="col-12 col-md-4" style="border-style: solid; border-radius: 5px; border-color: #dedede;">
             <div class="left-panel-content">
-                <p>Thông tin tài khoản</p>
+                <h6 style="text-align: center; margin-top: 20px;">Thông tin tài khoản</h6>
                 <div class="avatar-wrapper">
                     <img class="profile-pic" src="<%=user.photo_url  %>"/>
                     <div class="upload-button">
@@ -19,13 +19,12 @@
                         method="POST">
                         <input name="photo" class="file-upload" type="file"/>
                     </form>
-                    
                 </div>
-                <p>Tên: <%= user.fullname %> </p>
+                <p>Họ tên: <%= user.fullname %></p>
                 <p>Email: <%= user.email %> </p>
             </div>
         </div>
-        <div id="middle-panel" class="col-12 col-md-4 full-height" style="padding-right: 0;">
+        <div id="middle-panel" class="col-12 col-md-4 full-height" style="border-style: solid; border-radius: 5px; border-color: #dedede; padding-right: 0;">
             <div class="middle-panel-content full-height">
                 <div style="overflow-y: scroll; height: 50%;">
                     <table class="table">
@@ -38,26 +37,12 @@
                             <% user.list_friends.forEach(element => { %>
                                 <tr class="align-middle">
                                     <td>
-                                        <!-- <div class="avatar-circle"> -->
-                                            <!-- <span class="avatar-initials"> -->
-                                        <!-- <img class="avatar-circle" src="" alt=""> -->
-                                            <!-- </span> -->
-                                        <!-- </div> -->
-
                                         <div id="<%= element.id %>" class='c-avatar friends'>
                                             <img class='c-avatar__image' src='<%=element.photo_url%>' alt=''>
-                                            <!-- <span class='c-avatar__status'></span> -->
                                         </div>
                                     </td>
                                     <td><%= element.fullname %></td>
                                     <td id="<%= element._id %>" class="actionBtn">
-                                        <!-- <button
-                                            type="button"
-                                            class="btn btn-success btn-sm btn-call-video"
-                                            data-call-from-id="<%# userId %>"
-                                            data-call-to-id="<%# element._id %>">
-                                            Gọi
-                                        </button> -->
                                         <button id="<%= element.id %>" type="button" class="btn btn-danger btn-sm unfriendBtn">Hủy kết bạn</button>
                                     </td>
                                 </tr>
@@ -88,7 +73,7 @@
                 </div>
             </div>
         </div>
-        <div id="right-panel" class="col-12 col-md-4 full-height" style="background-color: burlywood; padding-right: 0;">
+        <div id="right-panel" class="col-12 col-md-4 full-height" style="border-style: solid; border-radius: 5px; border-color: #dedede; padding-right: 0;">
             <div class="right-panel-content full-height">
                 <div style="overflow-y: scroll; height: 50%;">
                     <table id="suggest" class="table">

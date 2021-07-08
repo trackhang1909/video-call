@@ -1,4 +1,26 @@
 let socket = io();
+let socketId = null;
+
+socket.on('connect', () => {
+    socketId = socket.id;
+    const data = {
+        'socketId': socket.id
+    }
+    fetch('/save-socket', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log(data);
+    })
+    .catch((error) => {
+        console.error('Error:', error);
+    });
+});
 
 // Answer call
 socket.on('answer-call', data => {
@@ -158,6 +180,7 @@ $(document).ready(function () {
             }
         });
     });
+
 })
 
 function addFriend(event) {
@@ -186,7 +209,19 @@ if (window.location.pathname === '/account-detail') {
     }
 }
 
+if (window.location.pathname !== '/call') {
+    sessionStorage.removeItem('socketId');
+    sessionStorage.removeItem('reloadCall');
+    sessionStorage.removeItem('person');
+}
+
 if (window.location.pathname === '/call') {
+    let person = sessionStorage.getItem('person');
+    let existName = $('#friend-name').text();
+    if (!person && !existName) {
+        person = prompt('Hãy nhập tên của bạn');
+    }
+
     // Reject call
     socket.on('reject-call-from', data => {
         $('#rejectModal .modal-body span').text(data.fullname + ' đã từ chối cuộc gọi của bạn');
@@ -235,10 +270,10 @@ if (window.location.pathname === '/call') {
     peer.on('open', id => {
         let myPeerId = document.getElementById('my-peer-id');
         myPeerId.innerHTML = `
-            Mã cuộc gọi: ${id}
             <button type="button" class="btn btn-sm btn-secondary" data-id="${id}" onclick="copyText(this)">
                 <i class="fa fa-files-o" aria-hidden="true"></i>
             </button>
+            ${id}
         `;
         peerId = id;
         //Call
@@ -253,6 +288,16 @@ if (window.location.pathname === '/call') {
                     call.on('stream', remoteStream => {
                         playStream('remote-stream', remoteStream);
                         clearInterval(interval);
+                        // Send peer id to remote (receive caller)
+                        let conn = peer.connect(remoteId);
+                        const data = {
+                            socketId,
+                            peerId,
+                            person
+                        }
+                        conn.on('open', function() {
+                            conn.send(data);
+                        });
                         console.log('Clear success');
                     });
                     falseId++;
@@ -279,6 +324,31 @@ if (window.location.pathname === '/call') {
         call.answer(streamCall);
         call.on('stream', remoteStream => {
             playStream('remote-stream', remoteStream);
+            peer.on('connection', (conn) => {
+                conn.on('open', () => {
+                    // Receive peer id from receive caller
+                    conn.on('data', (data) => {
+                        sessionStorage.setItem('socketId', data.socketId);
+                        sessionStorage.setItem('reloadCall', data.peerId);
+                        let newPerson = sessionStorage.getItem('person');
+                        if (!existName) {
+                            if (newPerson) {
+                                $('#friend-name').text(newPerson);
+                            } else {
+                                sessionStorage.setItem('person', data.person);
+                                $('#friend-name').text(data.person);
+                            }
+                        }
+                        // Send socket id to receiver (first time)
+                        const socketData = {
+                            socketTo: data.socketId,
+                            socketId: socketId,
+                            person
+                        }
+                        socket.emit('send-socket-id', socketData);
+                    });
+                });
+            });
         });
     });
 
@@ -292,5 +362,77 @@ if (window.location.pathname === '/call') {
         e.preventDefault();
         e.returnValue = '';
     });
+
+    let perfEntries = performance.getEntriesByType("navigation");
+    perfEntries.forEach(p => {
+        let reloadCall = sessionStorage.getItem('reloadCall');
+        if (reloadCall && p.type === 'reload') {
+            if (callFromId !== null && callToId !== null) {
+                window.location.href = '/call?id=' + reloadCall + '&callFromId=' + callFromId + '&callToId=' + callToId;
+            }
+            else if (callFromId !== null) {
+                window.location.href = '/call?id=' + reloadCall + '&callFromId=' + callFromId;
+            }
+            else {
+                window.location.href = '/call?id=' + reloadCall;
+            }
+        }
+    });
+
+    socket.on('receive-socket-id', (data) => {
+        sessionStorage.setItem('socketId', data.socketId);
+        let newPerson = sessionStorage.getItem('person');
+        if (!existName) {
+            if (newPerson) {
+                $('#friend-name').text(newPerson);
+            } else {
+                sessionStorage.setItem('person', data.person);
+                $('#friend-name').text(data.person);
+            }
+        }
+    });
+
+    $('#send').on('click', () => {
+        let message = $('#message').val();
+        let socketId = sessionStorage.getItem('socketId');
+        $('#chat-box').append(`<div class="message-box-holder">
+            <div class="message-box">
+                ${ message }
+            </div>
+        </div>`);
+        $('#message').val('');
+        if (socketId) {
+            const data = {
+                message, socketId
+            }
+            socket.emit('send-message', data);
+        }
+    });
+
+    socket.on('receive-message', (data) => {
+        $('#chat-box').append(`<div class="message-box-holder">
+            <div class="message-box message-partner">
+                ${ data }
+            </div>
+        </div>`);
+    });
+
+    socket.on('friend-disconnect-receive', () => {
+        alert('Người nhận đã bị mất kết nối');
+    })
+
+    setInterval(() => {
+        var ifConnected = window.navigator.onLine;
+        if (!ifConnected) {
+            alert('Bạn đã bị mất kết nối');
+            let socketId = sessionStorage.getItem('socketId');
+            socket.emit('friend-disconnect', socketId);
+        }
+    }, 3000);
+
+    function changeView () {
+        $('#local-stream').toggleClass('local-stream-cls local-stream-cls-2');
+        $('#remote-stream').toggleClass('remote-stream-cls remote-stream-cls-2');
+    }
 
 }
