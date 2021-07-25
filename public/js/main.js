@@ -215,7 +215,85 @@ if (window.location.pathname !== '/call') {
     sessionStorage.removeItem('person');
 }
 
+const loadIce = async () => {
+    $('#loading-call').show();
+    let xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function($evt){
+        if(xhr.readyState == 4 && xhr.status == 200){
+            let res = JSON.parse(xhr.responseText);
+            console.log("response: ", res);
+            createPeer(res.v)
+        }
+    }
+    xhr.open("PUT", "https://global.xirsys.net/_turn/VideoCall", true);
+    xhr.setRequestHeader("Authorization", "Basic " + btoa("trackhang1909:d4239138-d1b1-11eb-a883-0242ac130002") );
+    xhr.setRequestHeader("Content-Type", "application/json");
+    xhr.send( JSON.stringify({"format": "urls"}) );
+}
+
 if (window.location.pathname === '/call') {
+    loadIce()
+    function copyText(event) {
+        const el = document.createElement('textarea');
+        el.value = event.dataset.id;
+        el.setAttribute('readonly', '');
+        el.style.position = 'absolute';
+        el.style.left = '-9999px';
+        document.body.appendChild(el);
+        el.select();
+        document.execCommand('copy');
+        document.body.removeChild(el);
+        alert('Sao chép mã cuộc gọi thành công');
+    }
+    function changeView () {
+        $('#local-stream').toggleClass('local-stream-cls local-stream-cls-2');
+        $('#remote-stream').toggleClass('remote-stream-cls remote-stream-cls-2');
+    }
+}
+
+const createPeer = (ice) => {
+    $('#loading-call').hide();
+    const peer = new Peer({
+        key: 'peerjs',
+        host: 'video-call-tdtu-peer-server.herokuapp.com',
+        secure: true,
+        debug: 3,
+        port: 443,
+        config: { 'iceServers': [
+            { url: ice.iceServers.urls[0] },
+            {
+                username: ice.iceServers.username,
+                url: ice.iceServers.urls[1],
+                credential: ice.iceServers.credential
+            },
+            {
+                username: ice.iceServers.username,
+                url: ice.iceServers.urls[2],
+                credential: ice.iceServers.credential
+            },
+            {
+                username: ice.iceServers.username,
+                url: ice.iceServers.urls[3],
+                credential: ice.iceServers.credential
+            },
+            {
+                username: ice.iceServers.username,
+                url: ice.iceServers.urls[4],
+                credential: ice.iceServers.credential
+            },
+            {
+                username: ice.iceServers.username,
+                url: ice.iceServers.urls[5],
+                credential: ice.iceServers.credential
+            },
+            {
+                username: ice.iceServers.username,
+                url: ice.iceServers.urls[6],
+                credential: ice.iceServers.credential
+            }
+        ]}
+    });
+
     let person = sessionStorage.getItem('person');
     let existName = $('#friend-name').text();
     if (!person && !existName) {
@@ -231,7 +309,6 @@ if (window.location.pathname === '/call') {
         $('#rejectModal').modal('show');
     });
 
-    const peer = new Peer();
     let streamCall;
     // Get remote id
     const url_string = window.location.href;
@@ -251,19 +328,6 @@ if (window.location.pathname === '/call') {
         const video = document.getElementById(idVideoTag);
         video.srcObject = stream;
         video.play();
-    }
-
-    function copyText(event) {
-        const el = document.createElement('textarea');
-        el.value = event.dataset.id;
-        el.setAttribute('readonly', '');
-        el.style.position = 'absolute';
-        el.style.left = '-9999px';
-        document.body.appendChild(el);
-        el.select();
-        document.execCommand('copy');
-        document.body.removeChild(el);
-        alert('Sao chép mã cuộc gọi thành công');
     }
 
     //Show peer id
@@ -429,10 +493,4 @@ if (window.location.pathname === '/call') {
             socket.emit('friend-disconnect', socketId);
         }
     }, 3000);
-
-    function changeView () {
-        $('#local-stream').toggleClass('local-stream-cls local-stream-cls-2');
-        $('#remote-stream').toggleClass('remote-stream-cls remote-stream-cls-2');
-    }
-
 }

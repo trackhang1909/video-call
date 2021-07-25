@@ -313,7 +313,7 @@ body {
 }
 
 /* Loading ajax */
-#loading {
+#loading, #loading-call {
     background-color: white;
     position: fixed;
     display: block;
@@ -326,7 +326,7 @@ body {
     text-align: center;
 }
 
-#loading img {
+#loading img, #loading-call img {
     margin: auto;
     display: block;
     top: 50%;
