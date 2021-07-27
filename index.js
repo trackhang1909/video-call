@@ -8,10 +8,16 @@ const passport = require('passport')
 const flash = require("express-flash");
 const logger = require('morgan');
 const connectDatabase = require('./config/database');
-const http = require('http');
+const https = require('https');
 let activeUsers = new Set();
 const User = require("./app/models/User");
 const CallLog = require("./app/models/CallLog");
+const fs = require('fs');
+
+const options = {
+    key: fs.readFileSync('key.pem'),
+    cert: fs.readFileSync('cert.pem')
+};
 
 const app = express();
 
@@ -42,7 +48,7 @@ require('./config/google')
 route(app);
 
 // Config socket
-const server = http.createServer(app);
+const server = https.createServer(options, app);
 const io = require('socket.io')(server);
 
 io.on('connection', (socket) => {
@@ -111,4 +117,4 @@ io.on('connection', (socket) => {
 
 //Listen port
 const port = process.env.PORT;
-server.listen(port, () => console.log(`Listening at http://localhost:${port}`));
+server.listen(port, () => console.log(`Listening at https://localhost:${port}`));
