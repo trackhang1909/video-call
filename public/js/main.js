@@ -240,6 +240,9 @@ if (window.location.pathname === '/call') {
             $('#loading-call').hide();
             $('#inputNameModal').modal('show');
         }
+        else {
+            loadIce(person, existName);
+        }
     })
 
     function getName() {

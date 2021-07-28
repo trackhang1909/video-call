@@ -102,9 +102,9 @@
             const callToId = url.searchParams.get('callToId');
 
             if (callFromId !== null && callToId !== null) {
-                window.location.href = '/call?id=' + id + '&callFromId=' + callFromId + '&callToId=' + callToId;
+                window.location.href = '/call?callFromId=' + callFromId + '&callToId=' + callToId;
             }
-            else if (callFromId !== null) {
+            else if (callFromId !== null && id !== null) {
                 window.location.href = '/call?id=' + id + '&callFromId=' + callFromId;
             }
             else if (id !== null) {
