@@ -26,7 +26,7 @@ socket.on('connect', () => {
 socket.on('answer-call', data => {
     $('#answerModal .modal-body span').text('Bạn nhận được cuộc gọi từ ' + data.userCallFrom.fullname);
     $('#answerModal .modal-footer .btn-success').on('click', () => {
-        window.location = '/call?id=' + data.peerId + '&callFromId=' + data.userCallFrom._id;
+        window.location = '/check?id=' + data.peerId + '&callFromId=' + data.userCallFrom._id;
     });
     $('#answerModal .modal-footer .btn-danger').on('click', () => {
         socket.emit('reject-call', data);
@@ -197,7 +197,7 @@ if (window.location.pathname === '/') {
     let btnCall = document.getElementById('call');
     btnCall.addEventListener('click', () => {
         const id = document.getElementById('remote-id').value;
-        window.location = '/call?id=' + id;
+        window.location = '/check?id=' + id;
     });
 }
 
@@ -205,7 +205,7 @@ if (window.location.pathname === '/account-detail') {
     function clickCall(event) {
         const callFromId = event.dataset.callFromId;
         const callToId = event.dataset.callToId;
-        window.location = '/call?callFromId=' + callFromId + '&callToId=' + callToId;
+        window.location = '/check?callFromId=' + callFromId + '&callToId=' + callToId;
     }
 }
 
@@ -215,14 +215,14 @@ if (window.location.pathname !== '/call') {
     sessionStorage.removeItem('person');
 }
 
-const loadIce = async () => {
+const loadIce = async (person, existName) => {
     $('#loading-call').show();
     let xhr = new XMLHttpRequest();
     xhr.onreadystatechange = function($evt){
         if(xhr.readyState == 4 && xhr.status == 200){
             let res = JSON.parse(xhr.responseText);
             console.log("response: ", res);
-            createPeer(res.v)
+            createPeer(res.v, person, existName)
         }
     }
     xhr.open("PUT", "https://global.xirsys.net/_turn/VideoCall", true);
@@ -232,7 +232,35 @@ const loadIce = async () => {
 }
 
 if (window.location.pathname === '/call') {
-    loadIce()
+    let person = sessionStorage.getItem('person');
+    let existName = $('#friend-name').text();
+
+    $(document).ready(() => {
+        if (!person && !existName) {
+            $('#loading-call').hide();
+            $('#inputNameModal').modal('show');
+        }
+    })
+
+    function getName() {
+        person = $('#username').val();
+        if (!person) {
+            $('#required-span').show();
+            return;
+        }
+        loadIce(person, existName);
+        $('#inputNameModal').modal('hide');
+    }
+
+    function checkText() {
+        let inputName = $('#username').val();
+        if (!inputName) {
+            $('#required-span').show();
+        } else {
+            $('#required-span').hide();
+        }
+    }
+
     function copyText(event) {
         const el = document.createElement('textarea');
         el.value = event.dataset.id;
@@ -245,20 +273,19 @@ if (window.location.pathname === '/call') {
         document.body.removeChild(el);
         alert('Sao chép mã cuộc gọi thành công');
     }
+
     function changeView () {
         $('#local-stream').toggleClass('local-stream-cls local-stream-cls-2');
         $('#remote-stream').toggleClass('remote-stream-cls remote-stream-cls-2');
     }
 }
 
-const createPeer = (ice) => {
-    $('#loading-call').hide();
+const createPeer = (ice, person, existName) => {
     const peer = new Peer({
         key: 'peerjs',
-        host: 'video-call-tdtu-peer-server.herokuapp.com',
-        secure: true,
-        debug: 3,
-        port: 443,
+        // host: 'video-call-tdtu-peer-server.herokuapp.com',
+        // secure: true,
+        // port: 443,
         config: { 'iceServers': [
             { url: ice.iceServers.urls[0] },
             {
@@ -294,11 +321,11 @@ const createPeer = (ice) => {
         ]}
     });
 
-    let person = sessionStorage.getItem('person');
-    let existName = $('#friend-name').text();
-    if (!person && !existName) {
-        person = prompt('Hãy nhập tên của bạn');
-    }
+    // let person = sessionStorage.getItem('person');
+    // let existName = $('#friend-name').text();
+    // if (!person && !existName) {
+    //     person = prompt('Hãy nhập tên của bạn');
+    // }
 
     // Reject call
     socket.on('reject-call-from', data => {
@@ -320,14 +347,31 @@ const createPeer = (ice) => {
     let peerId = null;
 
     function openStream() {
-        const config = { audio: false, video: true };
+        const videoId = sessionStorage.getItem('videoId');
+        const audioOutputId = sessionStorage.getItem('audioOutputId');
+        let config = { audio: false, video: true };
+        if (videoId !== null && audioOutputId !== null) {
+            config = {
+                video: {
+                    deviceId: videoId
+                },
+                audio: {
+                    deviceId: audioOutputId
+                }
+            };
+        }
         return navigator.mediaDevices.getUserMedia(config);
     }
 
     function playStream(idVideoTag, stream) {
         const video = document.getElementById(idVideoTag);
         video.srcObject = stream;
-        video.play();
+        let playPromise = video.play();
+        if (playPromise !== undefined) {
+            playPromise.then(_ => { })
+            .catch(error => { });
+        }
+        $('#loading-call').hide();
     }
 
     //Show peer id
@@ -365,9 +409,9 @@ const createPeer = (ice) => {
                         console.log('Clear success');
                     });
                     falseId++;
-                    if (falseId === 10) {
+                    if (falseId === 5) {
                         clearInterval(interval);
-                        alert('Mã cuộc gọi không tồn tại');
+                        $('#notExistModal').modal('show');
                     }
                 }
             }, 1000);
@@ -413,6 +457,12 @@ const createPeer = (ice) => {
                     });
                 });
             });
+        });
+    });
+
+    peer.on('connection', function(conn) {
+        conn.on('close', function() {
+            $('#disconnectModal').modal('show');
         });
     });
 

@@ -38,6 +38,10 @@ class HomeController {
         const fullname = user ? user.fullname : '';
         res.render('call', { title, fullname });
     }
+    // [GET] /check
+    check(req, res) {
+        res.render('check');
+    }
     // [GET] /save-socket
     saveSocket(req, res) {
         const token = req.cookies.token

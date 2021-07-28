@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Kiểm tra camera</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <style>
+        #player {
+            width: 600px;
+            height: 400px;
+            background-color: #d2d2d2;
+        }
+        p {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <p>Video device</p>
+        <select class="form-select" id="video-input"></select>
+        <p>Microphone</p>
+        <select class="form-select" id="audio-input"></select>
+        <p>Speaker</p>
+        <select class="form-select" id="audio-output"></select>
+        <p>
+            <button type="button" class="btn btn-primary" onclick="startCamera()">Mở camera</button>
+            <button id="join" type="button" class="btn btn-success disabled" onclick="redirect()">Tham gia</button>
+        </p>
+        <p id="error" style="color:red; text-align: center; display: none">Permission denied</p>
+        <div class="mx-auto" style="width: 600px;">
+            <video id="player" controls autoplay muted></video>
+        </div>
+    </div>
+    <script>
+        'use strict'
+
+        let player = document.getElementById('player');
+        let videoInput = document.getElementById('video-input');
+        let audioInput = document.getElementById('audio-input');
+        let audioOutput = document.getElementById('audio-output');
+        let localStream;
+
+        navigator.mediaDevices.enumerateDevices()
+            .then(devices => {
+                for (let d of devices) {
+                    if (d.kind == 'videoinput') {
+                        videoInput.innerHTML += `<option value="${d.deviceId}">${d.label}</option>`;
+                    }
+                    else if (d.kind == 'audioinput') {
+                        audioInput.innerHTML += `<option value="${d.deviceId}">${d.label}</option>`
+                    }else {
+                        audioOutput.innerHTML += `<option value="${d.deviceId}">${d.label}</option>`;
+                    }
+                }
+            });
+
+        function startCamera() {
+            if (!localStream) {
+                console.log('Open camera');
+
+                let videoId = videoInput.value;
+                let audioInputId = audioInput.value;
+                let audioOutputId = audioOutput.value;
+
+                sessionStorage.setItem('videoId', videoId);
+                sessionStorage.setItem('audioOutputId', audioOutputId);
+
+                navigator.mediaDevices.getUserMedia({
+                    video: {
+                        deviceId: videoId
+                    },
+                    audio: {
+                        deviceId: audioOutputId
+                    }})
+                    .then((stream) => {
+                        localStream = stream;
+                        player.srcObject = stream;
+                    }).catch(er => {
+                    console.log(er);
+                    document.getElementById('error').style.display = '';
+                });
+                setTimeout(() => {
+                    let join = document.getElementById("join");
+                    join.classList.remove("disabled");
+                }, 2000)
+            } else {
+                console.log('Change video device');
+                localStream.getVideoTracks().forEach(t => t.stop());
+                localStream.getAudioTracks().forEach(t => t.stop());
+                localStream = null;
+                startCamera();
+            }
+        }
+
+        function redirect () {
+            const url_string = window.location.href;
+            const url = new URL(url_string);
+            const id = url.searchParams.get('id');
+            // Get call from - to id
+            const callFromId = url.searchParams.get('callFromId');
+            const callToId = url.searchParams.get('callToId');
+
+            if (callFromId !== null && callToId !== null) {
+                window.location.href = '/call?id=' + id + '&callFromId=' + callFromId + '&callToId=' + callToId;
+            }
+            else if (callFromId !== null) {
+                window.location.href = '/call?id=' + id + '&callFromId=' + callFromId;
+            }
+            else if (id !== null) {
+                window.location.href = '/call?id=' + id;
+            }
+            else {
+                window.location.href = '/call';
+            }
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+</body>
+</html>
